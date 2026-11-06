@@ -190,6 +190,9 @@ input[type=password]{width:100%;padding:12px 14px;border-radius:14px;border:2px 
 .syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--soft);margin-right:6px;vertical-align:middle}
 .syncdot.ok{background:var(--g)}.syncdot.syncing{background:var(--b)}.syncdot.error,.syncdot.offline{background:var(--r)}
 .linkbtn{color:var(--b);font-weight:800;text-decoration:underline}
+/* 키보드 힌트: 마우스 쓰는 기기에서만 보인다 */
+.kh{display:none}
+@media (hover:hover) and (pointer:fine){span.kh{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:800;background:rgba(255,255,255,.22);opacity:.9}p.kh{display:block}}
 
 /* ---------------- animation ----------------
    body.anim 일 때만 켜진다 (설정 > 애니메이션, OS의 '동작 줄이기'를 켜면 기본 꺼짐) */
@@ -458,16 +461,16 @@ function closeQuiz(){NEEDR=false;if(Q&&Q.timer)clearInterval(Q.timer);const o=$(
 function qTop(){const pct=Q.pct||0;
   return `<div class="qhead"><button class="x" onclick="confirmQuit()">✕</button><div class="bar"><i style="width:${pct}%"></i></div>${Q.timed?`<span class="timer" id="qtimer"></span>`:`<span class="hearts">${heartsH()}</span>`}</div>`}
 function confirmQuit(){sheet(`<h2 style="margin-top:0">정말 그만둘까요?</h2><p class="mute">지금 나가면 이번 레슨 진행 상황이 사라져요.</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">계속하기</button><button class="btn red grow" onclick="closeSheet();closeQuiz()">그만두기</button></div>`)}
-function showGrammarIntro(){const g=Q.grammarIntro;$('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">오늘의 문법</div>${grammarBody(g)}<div style="height:90px"></div></div>
-  <div class="fb"><div class="in"><button class="btn wide" onclick="Q.grammarIntro=null;Q.intro.length?showIntro(0):nextQ()">이해했어요! 문제 풀기 →</button></div></div>`}
-function showIntro(i){const v=Q.intro[i];if(!v){nextQ();return}
+function showGrammarIntro(){const g=Q.grammarIntro;Q.st='intro';$('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">오늘의 문법</div>${grammarBody(g)}<div style="height:90px"></div></div>
+  <div class="fb"><div class="in"><button class="btn wide" onclick="Q.grammarIntro=null;Q.intro.length?showIntro(0):nextQ()">이해했어요! 문제 풀기 →<span class="kh">Space</span></button></div></div>`}
+function showIntro(i){const v=Q.intro[i];if(!v){nextQ();return}Q.st='intro';
   const ks=[...v.w].map(c=>KJ.find(k=>k.c===c)).filter(Boolean);
   $('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">새 단어 ${i+1} / ${Q.intro.length}</div>
   <div class="intro pop"><div class="w jp">${ruby(v.f)}</div><div class="row" style="justify-content:center;margin-bottom:8px">${spk(v.f)}${spk(v.f,'f','m')}</div>
   <div class="k">${esc(v.k)}</div><span class="chip">${v.p}</span>
   ${ks.length?`<div class="card" style="margin-top:18px;text-align:left">${ks.map(k=>`<div class="row" style="margin:4px 0"><span class="jp" style="font-size:28px">${k.c}</span><span class="grow"><b>${esc(k.h)}</b><br><span class="mute jp" style="font-size:13px">音 ${k.on.join('・')||'-'}　訓 ${k.kun.join('・')||'-'}</span></span></div>`).join('')}</div>`:''}
   </div><div style="height:90px"></div></div>
-  <div class="fb"><div class="in"><button class="btn wide" onclick="showIntro(${i+1})">${i+1<Q.intro.length?'다음 단어 →':'문제 풀기 →'}</button></div></div>`;
+  <div class="fb"><div class="in"><button class="btn wide" onclick="showIntro(${i+1})">${i+1<Q.intro.length?'다음 단어 →':'문제 풀기 →'}<span class="kh">Space</span></button></div></div>`;
   setTimeout(()=>speak(v.f),250)}
 function nextQ(){$('.fb')?.remove();if(!Q)return;if(!Q.queue.length||(!Q.timed&&Q.hearts<=0)){finishQuiz();return}
   Q.st='q';const id=Q.queue.shift();Q.cur=typeof id==='string'?qForId(id):id;if(!Q.cur){Q.done++;nextQ();return}const q=Q.cur;
@@ -483,7 +486,20 @@ function nextQ(){$('.fb')?.remove();if(!Q)return;if(!Q.queue.length||(!Q.timed&&
   $('#chk').onclick=()=>check(sel);
   Q.keyh=e=>{if(!Q||Q.st!=='q')return;const n=+e.key;if(n>=1&&n<=q.opts.length){document.querySelectorAll('.opt')[n-1].click()}if(e.key==='Enter'&&sel>=0)check(sel)};
 }
-document.addEventListener('keydown',e=>{if(Q&&Q.keyh)Q.keyh(e);if(Q&&Q.st==='fb'&&e.key==='Enter'){$('#cont')?.click()}});
+/* 키보드: 숫자 1~4 보기 선택 · Enter 확인
+   Space / → : 다음 단어, 계속 · 플래시카드는 Space 뒤집기, → 알아요, ← 몰라요 */
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||e.target.closest?.('input,select,textarea')||$('#sheet'))return;
+  const sp=e.key===' ',next=sp||e.key==='ArrowRight';
+  if(Q){const st=Q.st;               // 이번 키로 상태가 바뀌어도(확인→피드백) 같은 키로 '계속'까지 넘어가지 않게
+    if(st==='q'&&Q.keyh)Q.keyh(e);
+    if(sp)e.preventDefault();                       // 스크롤·포커스된 버튼 눌림 방지
+    if(st==='fb'&&(next||e.key==='Enter')){e.preventDefault();$('#cont')?.click()}
+    else if(st==='intro'&&(next||e.key==='Enter')){e.preventDefault();$('#quiz .fb .btn')?.click()}
+    else if(st==='done'&&(next||e.key==='Enter')){e.preventDefault();closeQuiz()}
+    return}
+  if($('#fl')){const k={' ':'#flc',ArrowRight:'#fly',ArrowLeft:'#fln'}[e.key];if(k&&$(k)){e.preventDefault();$(k).click()}}
+});
 function check(sel){const q=Q.cur;const ok=!!q.opts[sel].ok;Q.st='fb';sfx(ok?'ok':'ng');
   document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(q.opts[i].ok)b.classList.add('ok');else if(i===sel)b.classList.add('ng')});
   $('.qprompt').querySelectorAll('rt').forEach(r=>r.style.visibility='');
@@ -498,9 +514,9 @@ function check(sel){const q=Q.cur;const ok=!!q.opts[sel].ok;Q.st='fb';sfx(ok?'ok
   // 효과음과 겹치지 않게 조금 뒤에 읽는다
   if(q.sayAfter)speak(q.sayAfter,'',S.sfx?420:0);
   const fb=$('.fb');fb.className='fb '+(ok?'ok':'ng');
-  fb.innerHTML=`<div class="in"><div class="t">${ok?pick(['정답이에요! 🎉','훌륭해요! ✨','완벽해요! 👏','맞아요! 💯']):'아쉬워요 😢'}</div><div class="d">${ok?'':'정답: '}${q.ans}</div><button class="btn wide ${ok?'':'red'}" id="cont">계속</button></div>`;
+  fb.innerHTML=`<div class="in"><div class="t">${ok?pick(['정답이에요! 🎉','훌륭해요! ✨','완벽해요! 👏','맞아요! 💯']):'아쉬워요 😢'}</div><div class="d">${ok?'':'정답: '}${q.ans}</div><button class="btn wide ${ok?'':'red'}" id="cont">계속<span class="kh">Space</span></button></div>`;
   $('#cont').onclick=nextQ;save()}
-function finishQuiz(timeUp){if(!Q)return;if(Q.timer)clearInterval(Q.timer);$('.fb')?.remove();
+function finishQuiz(timeUp){if(!Q)return;Q.st='done';if(Q.timer)clearInterval(Q.timer);$('.fb')?.remove();
   const failed=!Q.timed&&Q.hearts<=0;const acc=Math.round(Q.correct/Math.max(1,Q.correct+Q.wrong)*100);
   let bonus=0;if(!failed){bonus=Q.mode==='exam'?0:20;if(Q.wrong===0&&Q.correct>=5){bonus+=15;S.perfect++}}
   const total=Q.xp+bonus;const sec=Math.round((Date.now()-Q.start)/1000);
@@ -515,7 +531,7 @@ function finishQuiz(timeUp){if(!Q)return;if(Q.timer)clearInterval(Q.timer);$('.f
   ${after>before?`<div class="card lvup" style="border-color:var(--y)"><b>🏅 레벨 업! Lv.${after}</b></div>`:''}
   ${goalHit?`<div class="card" style="border-color:var(--g)"><b>🎯 오늘의 목표 달성!</b></div>`:''}
   ${Q.mode==='exam'?examReview(Q.log):''}
-  <button class="btn wide" onclick="closeQuiz()">계속</button></div></div>`;
+  <button class="btn wide" onclick="closeQuiz()">계속<span class="kh">Space</span></button></div></div>`;
   countUp($('#rs1'),total);countUp($('#rs2'),acc,'%');countUp($('#rs3'),Q.maxCombo);
   sfx(failed?'fail':'win');
   if(!failed&&after>before)setTimeout(()=>sfx('level'),1000);else if(!failed&&goalHit)setTimeout(()=>sfx('goal'),1000);
@@ -660,7 +676,7 @@ function flash(list){let i=0,flip=false;const ov=document.createElement('div');o
     <button class="card" id="flc" style="width:100%;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
     <div class="jp" style="font-size:48px;line-height:2">${flip?ruby(v.f):esc(v.w)}</div>${flip?`<div style="font-size:22px;font-weight:800">${esc(v.k)}</div><span class="chip">${v.p}</span>`:'<div class="mute">탭해서 뜻 보기</div>'}</button>
     <div class="row" style="justify-content:center;margin:6px 0 16px">${spk(v.f)}${spk(v.f,'f','m')}</div>
-    <div class="row"><button class="btn red grow" id="fln">😵 몰라요</button><button class="btn grow" id="fly">😎 알아요</button></div></div>`;
+    <div class="row"><button class="btn red grow" id="fln">😵 몰라요<span class="kh">←</span></button><button class="btn grow" id="fly">😎 알아요<span class="kh">→</span></button></div><p class="mute kh" style="text-align:center;margin-top:12px;font-size:12px">Space 뒤집기 · → 알아요 · ← 몰라요</p></div>`;
     if(fx)$('#flc').classList.add(fx);
     $('#flx').onclick=()=>{ov.remove();document.body.style.overflow='';render()};
     $('#flc').onclick=()=>{flip=!flip;draw('flip');sfx('flip');if(flip)speak(v.f)};
