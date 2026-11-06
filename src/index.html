@@ -190,6 +190,27 @@ input[type=password]{width:100%;padding:12px 14px;border-radius:14px;border:2px 
 .syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--soft);margin-right:6px;vertical-align:middle}
 .syncdot.ok{background:var(--g)}.syncdot.syncing{background:var(--b)}.syncdot.error,.syncdot.offline{background:var(--r)}
 .linkbtn{color:var(--b);font-weight:800;text-decoration:underline}
+/* learning path */
+.unithd{display:flex;align-items:center;gap:14px;background:var(--b);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:6px;box-shadow:0 5px 0 var(--b-d)}
+.unithd .ut{font-size:12px;font-weight:900;opacity:.85;letter-spacing:.5px}
+.unithd b{font-size:15px}
+.unithd .bar{height:10px;margin-top:8px;background:rgba(255,255,255,.3)}
+.unithd .bar>i{background:#fff}
+.unithd .up{font-size:30px;font-weight:900;line-height:1}
+.unithd .up small{font-size:14px;opacity:.8}
+.unitnext{text-align:center;color:var(--soft);font-weight:800;font-size:13px;border:2px dashed var(--line);border-radius:14px;padding:12px;margin:0 0 6px}
+.node.green{background:var(--g);box-shadow:0 7px 0 var(--g-d)}
+.node.orange{background:var(--o);box-shadow:0 7px 0 #cc7800}
+.node.gold{background:var(--y);box-shadow:0 7px 0 #d9a800}
+.node.big{width:92px;height:84px;font-size:36px}
+.node.done{filter:saturate(.85)}
+.node.done:after{content:"✓";position:absolute;right:-4px;top:-4px;width:24px;height:24px;border-radius:50%;background:var(--g);color:#fff;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg)}
+.node.lock .lbl{color:var(--soft)}
+button.mini{width:100%;font:inherit;color:inherit;cursor:pointer}
+.idots{display:flex;gap:5px;margin-left:auto}
+.idots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.idots i.d{background:var(--g)}
+.idots i.c{background:var(--b);transform:scale(1.25)}
 /* 키보드 힌트: 마우스 쓰는 기기에서만 보인다 */
 .kh{display:none}
 @media (hover:hover) and (pointer:fine){span.kh{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:800;background:rgba(255,255,255,.22);opacity:.9}p.kh{display:block}}
@@ -292,9 +313,10 @@ const KEY='maeil-n3-v1';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dayDiff=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const addDays=(s,n)=>{const d=new Date(s);d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const DEF={xp:0,streak:0,best:0,last:null,days:{},goal:50,perDay:5,srs:{},gdone:{},kana:{},kknown:{},star:{},furi:true,rate:.9,voice:'auto',sfx:true,vol:.7,anim:!matchMedia('(prefers-reduced-motion: reduce)').matches,exams:[],badges:{},lessons:0,perfect:0,freezes:0};
+const DEF={xp:0,streak:0,best:0,last:null,days:{},goal:50,perDay:8,gPer:3,kPer:5,step:0,srs:{},gdone:{},kana:{},kknown:{},star:{},furi:true,rate:.9,voice:'auto',sfx:true,vol:.7,anim:!matchMedia('(prefers-reduced-motion: reduce)').matches,exams:[],badges:{},lessons:0,perfect:0,freezes:0};
 // _ut: 마지막 수정 시각(ms) · _ep: 초기화 횟수(초기화가 다른 기기에도 퍼지게) · _uid: 이 기록이 연결된 계정
 let S; try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S={...DEF}}
+if(!S._m2){if(S.perDay===5)S.perDay=8;S._m2=1}   // 레슨당 단어 기본값을 8개로 바꾼 것 반영
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function save(){S._ut=Date.now();saveLocal();if(typeof queuePush==='function')queuePush()}
 function dayXP(){return (S.days[today()]||0)}
@@ -394,7 +416,9 @@ function srsGet(id){return S.srs[id]}
 function srsGrade(id,ok){const s=S.srs[id]||{b:0,d:today()};if(ok){s.b=Math.min(IV.length-1,s.b+1)}else{s.b=Math.max(1,s.b-2)}s.d=addDays(today(),IV[s.b]);s.n=(s.n||0)+1;S.srs[id]=s}
 function dueIds(){const t=today();return Object.entries(S.srs).filter(([k,s])=>s.d<=t).map(([k])=>k)}
 function learnedCount(){return Object.keys(S.srs).filter(k=>k.startsWith('v')).length}
-function newWords(n){const out=[];for(const v of VORD){if(!S.srs['v'+v.i]){out.push(v);if(out.length>=n)break}}return out}
+// 같은 표기(日本 にほん/にっぽん 등)는 한 레슨에 같이 넣지 않는다
+function newWords(n){const out=[],seen=new Set();for(const v of VORD){if(!S.srs['v'+v.i]&&!seen.has(v.w)){seen.add(v.w);out.push(v);if(out.length>=n)break}}return out}
+const SAMEW={};V.forEach(v=>(SAMEW[v.w]=SAMEW[v.w]||[]).push(v));
 function nextGrammar(){return G.find(g=>!S.gdone[g.id])}
 
 /* ---------------- question generators ---------------- */
@@ -438,6 +462,17 @@ function qGrammar(g,si){const cand=g.s.map((s,i)=>[s,i]).filter(([s])=>/\[\[/.te
   const ds=[];for(const x of [...shuffle(near),...shuffle(pool)]){if(!ds.some(d=>plain(d)===plain(x.f)))ds.push(x.f);if(ds.length>=3)break}
   return {id:'g'+g.id,type:'文法 — （　）에 들어갈 말을 고르세요',prompt:`<span class="jp">${ruby(s.j,{blank:true})}</span>`,cls:'sent',opts:shuffle([{h:`<span class="jp">${ruby(ans)}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${ruby(d)}</span>`}))]),ans:`<span class="jp">${ruby(s.j)}</span><br><span class="mute">${esc(s.k)}</span><br><b>${esc(g.t)}</b> : ${esc(g.m)}`,sayAfter:s.j}}
 function qKanji(k){const ds=sample(KJ.filter(x=>x.c!==k.c),3);return {id:'k'+k.c,type:'한자의 훈음을 고르세요',prompt:`<span class="jp" style="font-size:56px">${k.c}</span>`,opts:shuffle([{h:esc(k.h),ok:1},...ds.map(d=>({h:esc(d.h)}))]),ans:`${k.c} — ${esc(k.h)} <span class="mute">(${k.on.join('・')||'-'} / ${k.kun.join('・')||'-'})</span>`,sayAfter:kyomi(k.on[0]||k.kun[0]||'')}}
+// 문법 뜻 고르기 (같이 배우는 문법끼리 헷갈리지 않게 보기에 우선 넣는다)
+function qGrammarMean(g,peers=[]){const pool=[...shuffle(peers.filter(x=>x.id!==g.id)),...shuffle(G.filter(x=>x.id!==g.id))];const ds=[];
+  for(const x of pool){if(x.m!==g.m&&!ds.some(d=>d.m===x.m))ds.push(x);if(ds.length>=3)break}
+  return {id:'g'+g.id,type:'文法 — 이 문법의 뜻은?',prompt:`<span class="jp" style="font-size:28px;font-weight:700">${esc(g.t)}</span>`,opts:shuffle([{h:esc(g.m),ok:1},...ds.map(d=>({h:esc(d.m)}))]),ans:`<b class="jp">${esc(g.t)}</b> : ${esc(g.m)}<br><span class="mute jp">${esc(g.c)}</span>`}}
+// 한자 읽기 고르기 (음독이 있으면 음독, 없으면 훈독)
+function qKanjiYomi(k){const r=k.on[0]||k.kun[0];if(!r)return null;const isOn=!!k.on[0];const mine=new Set([...k.on,...k.kun].map(kyomi));
+  const pool=shuffle(KJ.filter(x=>x.c!==k.c).flatMap(x=>isOn?x.on:x.kun)).filter(x=>!mine.has(kyomi(x)));const ds=[];
+  for(const x of pool){if(!ds.some(d=>kyomi(d)===kyomi(x)))ds.push(x);if(ds.length>=3)break}
+  if(ds.length<3)return null;
+  return {id:'k'+k.c,type:`이 한자의 ${isOn?'음독':'훈독'}은?`,prompt:`<span class="jp" style="font-size:56px">${k.c}</span>`,opts:shuffle([{h:`<span class="jp">${r}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${d}</span>`}))]),
+    ans:`${k.c} — ${esc(k.h)} <span class="mute jp">(음 ${k.on.join('・')||'-'} / 훈 ${k.kun.join('・')||'-'})</span>`,sayAfter:kyomi(r)}}
 const VGEN=[qMeaning,qReverse,qReading,qWriting,qListen];
 function qForId(id){if(id[0]==='v'){const v=V[+id.slice(1)];return pick(VGEN)(v)}if(id[0]==='g'){return qGrammar(G[+id.slice(1)])}if(id[0]==='k'){return qKanji(KJ.find(k=>k.c===id.slice(1)))}}
 
@@ -447,8 +482,9 @@ function runQuiz({title,items,intro=[],hearts=3,timed=0,onDone,mode='lesson',gra
   Q={title,items:[...items],queue:[...items],intro:[...intro],grammarIntro,hearts,maxH:hearts,done:0,total:items.length,correct:0,wrong:0,combo:0,maxCombo:0,xp:0,start:Date.now(),timed,onDone,mode,log:[],retry:new Set()};
   const ov=document.createElement('div');ov.className='ov';ov.id='quiz';document.body.appendChild(ov);document.body.style.overflow='hidden';
   if(timed){Q.timer=setInterval(()=>{const left=Math.max(0,timed-Math.floor((Date.now()-Q.start)/1000));const el=$('#qtimer');if(el)el.textContent=`⏱ ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;if(left<=0){clearInterval(Q.timer);finishQuiz(true)}},500)}
+  if(grammarIntro)Q.intro.unshift({t:'g',g:grammarIntro});
   Q.pct=0;sfx('start');
-  if(grammarIntro)showGrammarIntro();else if(Q.intro.length)showIntro(0);else nextQ();
+  if(Q.intro.length)showIntro(0);else nextQ();
 }
 function heartsH(lost=-1){return Array.from({length:Q.maxH},(_,i)=>`<span class="h ${i===lost?'lost':''}">${i<Q.hearts||i===lost?'❤️':'🤍'}</span>`).join('')}
 function setBar(){const p=Math.round(Q.done/Q.total*100);Q.pct=p;const b=$('.qhead .bar>i');if(b)b.style.width=p+'%'}
@@ -461,17 +497,31 @@ function closeQuiz(){NEEDR=false;if(Q&&Q.timer)clearInterval(Q.timer);const o=$(
 function qTop(){const pct=Q.pct||0;
   return `<div class="qhead"><button class="x" onclick="confirmQuit()">✕</button><div class="bar"><i style="width:${pct}%"></i></div>${Q.timed?`<span class="timer" id="qtimer"></span>`:`<span class="hearts">${heartsH()}</span>`}</div>`}
 function confirmQuit(){sheet(`<h2 style="margin-top:0">정말 그만둘까요?</h2><p class="mute">지금 나가면 이번 레슨 진행 상황이 사라져요.</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">계속하기</button><button class="btn red grow" onclick="closeSheet();closeQuiz()">그만두기</button></div>`)}
-function showGrammarIntro(){const g=Q.grammarIntro;Q.st='intro';$('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">오늘의 문법</div>${grammarBody(g)}<div style="height:90px"></div></div>
-  <div class="fb"><div class="in"><button class="btn wide" onclick="Q.grammarIntro=null;Q.intro.length?showIntro(0):nextQ()">이해했어요! 문제 풀기 →<span class="kh">Space</span></button></div></div>`}
-function showIntro(i){const v=Q.intro[i];if(!v){nextQ();return}Q.st='intro';
-  const ks=[...v.w].map(c=>KJ.find(k=>k.c===c)).filter(Boolean);
-  $('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">새 단어 ${i+1} / ${Q.intro.length}</div>
-  <div class="intro pop"><div class="w jp">${ruby(v.f)}</div><div class="row" style="justify-content:center;margin-bottom:8px">${spk(v.f)}${spk(v.f,'f','m')}</div>
-  <div class="k">${esc(v.k)}</div><span class="chip">${v.p}</span>
-  ${ks.length?`<div class="card" style="margin-top:18px;text-align:left">${ks.map(k=>`<div class="row" style="margin:4px 0"><span class="jp" style="font-size:28px">${k.c}</span><span class="grow"><b>${esc(k.h)}</b><br><span class="mute jp" style="font-size:13px">音 ${k.on.join('・')||'-'}　訓 ${k.kun.join('・')||'-'}</span></span></div>`).join('')}</div>`:''}
-  </div><div style="height:90px"></div></div>
-  <div class="fb"><div class="in"><button class="btn wide" onclick="showIntro(${i+1})">${i+1<Q.intro.length?'다음 단어 →':'문제 풀기 →'}<span class="kh">Space</span></button></div></div>`;
-  setTimeout(()=>speak(v.f),250)}
+// 배우기 화면: intro 배열의 항목을 하나씩 보여준다. {t:'v',v} 단어 · {t:'g',g} 문법 · {t:'k',k} 한자
+function showIntro(i){let it=Q.intro[i];if(!it){nextQ();return}Q.st='intro';if(!it.t)it={t:'v',v:it};
+  const n=Q.intro.length,nx=Q.intro[i+1];
+  const kind={v:'새 단어',g:'새 문법',k:'새 한자'}[it.t];
+  const nextLbl=!nx?'문제 풀기 →':{v:'다음 단어 →',g:'다음 문법 →',k:'다음 한자 →'}[nx.t||'v'];
+  let body='';
+  if(it.t==='v'){const v=it.v,ks=[...v.w].map(c=>KJ.find(k=>k.c===c)).filter(Boolean);
+    body=`<div class="intro pop"><div class="w jp">${ruby(v.f)}</div><div class="row" style="justify-content:center;margin-bottom:8px">${spk(v.f)}${spk(v.f,'f','m')}</div>
+    <div class="k">${esc(v.k)}</div><span class="chip">${v.p}</span>
+    ${SAMEW[v.w].length>1?`<div class="card" style="margin-top:14px;text-align:left;border-color:var(--y)"><b>💡 같은 표기, 다른 읽기</b>${SAMEW[v.w].filter(o=>o!==v).map(o=>`<div class="row" style="margin-top:6px"><span class="grow"><span class="jp" style="font-size:18px;line-height:2">${ruby(o.f)}</span> <span class="mute">${esc(o.k)}</span></span>${spk(o.f,'sm')}</div>`).join('')}</div>`:''}
+    ${ks.length?`<div class="card" style="margin-top:18px;text-align:left">${ks.map(k=>`<div class="row" style="margin:4px 0"><span class="jp" style="font-size:28px">${k.c}</span><span class="grow"><b>${esc(k.h)}</b><br><span class="mute jp" style="font-size:13px">音 ${k.on.join('・')||'-'}　訓 ${k.kun.join('・')||'-'}</span></span></div>`).join('')}</div>`:''}</div>`}
+  else if(it.t==='g')body=grammarBody(it.g);
+  else body=kanjiCard(it.k);
+  // 몇 번째인지 점으로 보여준다
+  const dots=n>1?`<div class="idots">${Q.intro.map((_,j)=>`<i class="${j<i?'d':j===i?'c':''}"></i>`).join('')}</div>`:'';
+  $('#quiz').innerHTML=`<div class="in">${qTop()}<div class="row"><span class="chip">${kind} ${i+1} / ${n}</span>${dots}</div>${body}<div style="height:90px"></div></div>
+  <div class="fb"><div class="in"><button class="btn wide" onclick="showIntro(${i+1})">${it.t==='g'?'이해했어요! ':''}${nextLbl}<span class="kh">Space</span></button></div></div>`;
+  $('#quiz').scrollTop=0;
+  if(it.t==='v')setTimeout(()=>speak(it.v.f),250);
+  else if(it.t==='k'){const r=it.k.on[0]||it.k.kun[0];if(r)setTimeout(()=>speak(kyomi(r)),250)}}
+function kanjiCard(k){const ex=k.ex.map(i=>V[i]).slice(0,4);
+  const chips=rs=>rs.map(r=>`<button class="chip jp" style="font-size:15px" data-say="${esc(kyomi(r))}">${r} 🔊</button>`).join(' ')||'<span class="mute">-</span>';
+  return `<div class="intro"><div class="w jp" style="font-size:96px;line-height:1.25">${k.c}</div><div class="k">${esc(k.h)}</div><span class="chip">${k.s}획</span>
+  <div class="card" style="margin-top:18px;text-align:left"><div class="sec">음독</div><div>${chips(k.on)}</div><div class="sec">훈독</div><div>${chips(k.kun)}</div>
+  ${ex.length?`<div class="sec">이 한자가 들어간 N3 단어</div>${ex.map(v=>`<div class="row" style="margin:6px 0"><span class="grow"><span class="jp" style="font-size:19px;line-height:2">${ruby(v.f)}</span> <span class="mute">${esc(v.k)}</span></span>${spk(v.f,'sm')}</div>`).join('')}`:''}</div></div>`}
 function nextQ(){$('.fb')?.remove();if(!Q)return;if(!Q.queue.length||(!Q.timed&&Q.hearts<=0)){finishQuiz();return}
   Q.st='q';const id=Q.queue.shift();Q.cur=typeof id==='string'?qForId(id):id;if(!Q.cur){Q.done++;nextQ();return}const q=Q.cur;
   const furiOff=q.nofuri;
@@ -560,6 +610,8 @@ function settings(){loadVoices();sheet(`<h2 style="margin-top:0">⚙️ 설정</
   <label>후리가나 표시<input type="checkbox" class="tog" id="stF" ${S.furi?'checked':''}></label>
   <label>하루 목표 XP<select id="stG">${[20,50,100,150,200].map(n=>`<option ${S.goal===n?'selected':''} value="${n}">${n} XP ${n===20?'(가볍게)':n===50?'(보통)':n===100?'(열심히)':n>=150?'(빡세게)':''}</option>`).join('')}</select></label>
   <label>레슨당 새 단어<select id="stN">${[5,8,10,15,20].map(n=>`<option ${S.perDay===n?'selected':''}>${n}</option>`).join('')}</select></label>
+  <label>레슨당 새 문법<select id="stGp">${[1,2,3,4,5].map(n=>`<option ${S.gPer===n?'selected':''}>${n}</option>`).join('')}</select></label>
+  <label>레슨당 새 한자<select id="stKp">${[3,5,8,10].map(n=>`<option ${S.kPer===n?'selected':''}>${n}</option>`).join('')}</select></label>
   <label>음성 속도 <span><input type="range" id="stR" min=".5" max="1.3" step=".1" value="${S.rate}"> <b id="stRv">${S.rate}</b></span></label>
   <label>기본 음성<select id="stV" style="max-width:55%"><option value="auto">자동</option>${VOICES.map(v=>`<option ${S.voice===v.name?'selected':''} value="${esc(v.name)}">${esc(v.name)}</option>`).join('')}</select></label>
   <label>효과음<input type="checkbox" class="tog" id="stS" ${S.sfx?'checked':''}></label>
@@ -570,7 +622,7 @@ function settings(){loadVoices();sheet(`<h2 style="margin-top:0">⚙️ 설정</
   ${VOICES.length&&!VOICES.some(v=>vscore(v)>=30)?'<p class="mute" style="font-size:13px">💡 음성이 작거나 기계음처럼 들리면 크롬의 "Google 日本語" 또는 엣지의 "Nanami Online (Natural)" 음성을 고르면 훨씬 또렷해요.</p>':''}${VOICES.length?'':'<p class="mute" style="font-size:13px">⚠️ 일본어 음성이 아직 감지되지 않았어요. OS 설정에서 일본어 음성을 설치하면 더 자연스럽게 들려요.</p>'}
   <div class="row" style="margin-top:14px"><button class="btn ghost grow" onclick="speak('こんにちは。毎日{まいにち}少{すこ}しずつ頑張{がんば}りましょう。')">🔊 음성 테스트</button><button class="btn grow" onclick="closeSheet();render()">완료</button></div>
   <p style="margin-top:18px"><button class="mute" style="font-size:12px;text-decoration:underline" onclick="resetAll()">학습 기록 초기화</button></p>`);
-  $('#stF').onchange=e=>{S.furi=e.target.checked;save();hdr()};$('#stG').onchange=e=>{S.goal=+e.target.value;save()};$('#stN').onchange=e=>{S.perDay=+e.target.value;save()};
+  $('#stF').onchange=e=>{S.furi=e.target.checked;save();hdr()};$('#stG').onchange=e=>{S.goal=+e.target.value;save()};$('#stN').onchange=e=>{S.perDay=+e.target.value;save()};$('#stGp').onchange=e=>{S.gPer=+e.target.value;save()};$('#stKp').onchange=e=>{S.kPer=+e.target.value;save()};
   $('#stR').oninput=e=>{S.rate=+e.target.value;$('#stRv').textContent=S.rate;save()};$('#stV').onchange=e=>{S.voice=e.target.value;save()};$('#stS').onchange=e=>{S.sfx=e.target.checked;save();sfx('ok')};
   $('#stVol').oninput=e=>{S.vol=+e.target.value;$('#stVolv').textContent=Math.round(S.vol*100);save()};$('#stVol').onchange=()=>sfx('ok');
   $('#stA').onchange=e=>{S.anim=e.target.checked;save();hdr()}}
@@ -582,7 +634,7 @@ const BADGES=[
   ['w50','📗','단어 50개',()=>learnedCount()>=50],['w300','📚','단어 300개',()=>learnedCount()>=300],['w1000','🧠','단어 1000개',()=>learnedCount()>=1000],['wall','🎓','N3 단어 정복',()=>learnedCount()>=V.length],
   ['g10','📘','문법 10개',()=>Object.keys(S.gdone).length>=10],['g46','📙','문법 절반',()=>Object.keys(S.gdone).length>=46],['gall','📕','문법 정복',()=>Object.keys(S.gdone).length>=G.length],
   ['k100','漢','한자 100자',()=>Object.keys(S.kknown).length>=100],['perf','💎','퍼펙트 5회',()=>S.perfect>=5],['xp1k','⚡','1000 XP',()=>S.xp>=1000],['xp5k','🌟','5000 XP',()=>S.xp>=5000],
-  ['kana','あ','가나 마스터',()=>kanaMastery()>=.9],['exam','🎯','모의고사 합격',()=>S.exams.some(e=>e.acc>=60)],['exam9','🏆','모의고사 90점',()=>S.exams.some(e=>e.acc>=90)]];
+  ['u1','🗺️','첫 유닛 완료',()=>(S.step||0)>=8],['u10','🏰','유닛 10개',()=>(S.step||0)>=80],['kana','あ','가나 마스터',()=>kanaMastery()>=.9],['exam','🎯','모의고사 합격',()=>S.exams.some(e=>e.acc>=60)],['exam9','🏆','모의고사 90점',()=>S.exams.some(e=>e.acc>=90)]];
 function checkBadges(){for(const [id,e,n,f] of BADGES){if(!S.badges[id]&&f()){S.badges[id]=today();save();setTimeout(()=>{toast(`${e} 업적 달성: ${n}`);confetti();sfx('badge')},600)}}}
 function badgeGrid(){return `<div class="badges">${BADGES.map(([id,e,n])=>`<div class="badge ${S.badges[id]?'':'off'}"><span class="e">${e}</span>${n}</div>`).join('')}</div>`}
 
@@ -595,20 +647,42 @@ function render(){hdr();document.querySelectorAll('#nav button').forEach(b=>b.cl
   [...app.children].slice(0,14).forEach((c,i)=>c.style.setProperty('--i',i));app.querySelectorAll('.node').forEach((n,i)=>n.style.setProperty('--n',i));void app.offsetWidth;app.classList.add('enter')}
 const VIEWS={home,grammar:grammarView,vocab:vocabView,kanji:kanjiView,exam:examView,kana:kanaView};
 
-function home(){const due=dueIds();const nw=newWords(S.perDay);const ng=nextGrammar();const dx=dayXP();const st=liveStreak();
+/* ---------------- 학습 경로 ----------------
+   유닛 하나 = 8단계. 단어 → 문법 → 복습 → 한자 → 단어 → 단어 → 문법 → 유닛 복습
+   S.step = 지금까지 끝낸 단계 수(계속 늘어남). 단계를 끝내면(하트를 다 쓰지 않고) 다음 단계가 열린다. */
+const UNIT=['v','g','r','k','v','v','g','R'];
+const ZIG=[0,-58,-84,-58,0,58,84,58];
+const NODE={v:{e:'📝',c:'green',n:()=>`새 단어 ${S.perDay}개`},g:{e:'📘',c:'blue',n:()=>`새 문법 ${S.gPer}개`},r:{e:'🔁',c:'purple',n:()=>'복습'},
+  k:{e:'漢',c:'orange',n:()=>`새 한자 ${S.kPer}자`},R:{e:'🏆',c:'gold big',n:()=>'유닛 복습'}};
+function advance(){const s=S.step||0;S.step=s+1;save();
+  if(S.step%UNIT.length===0)setTimeout(()=>{toast(`🏆 유닛 ${s/UNIT.length+1|0} 완료! 다음 유닛이 열렸어요`);confetti();sfx('level')},1400)}
+// adv=true 면 경로의 현재 단계(끝내면 다음 단계로), false 면 연습(경로는 그대로)
+function playNode(t,adv){const after=adv?advance:null;
+  if(t==='v')startVocabLesson(after);else if(t==='g')startGrammarLesson(nextGrammars(S.gPer),after);
+  else if(t==='k')startKanjiLearn(after);else startReview(after,t==='R')}
+function pathHTML(){const step=S.step||0,L=UNIT.length,u=Math.floor(step/L),pos=step%L;
+  const cnt=t=>UNIT.filter(x=>x===t).length;
+  return `<div class="unithd"><div class="grow"><div class="ut">유닛 ${u+1}</div><b>단어 ${cnt('v')*S.perDay}개 · 문법 ${cnt('g')*S.gPer}개 · 한자 ${S.kPer}자</b>
+    <div class="bar"><i style="width:${pos/L*100}%"></i></div></div><div class="up">${pos}<small>/${L}</small></div></div>
+  <div class="path">${UNIT.map((t,i)=>{const st=i<pos?'done':i===pos?'cur':'lock',N=NODE[t];
+    return `<div class="pathrow" style="transform:translateX(${ZIG[i]}px)">${st==='cur'?`<div class="tip">${step===0?'시작!':'다음 단계'}</div>`:''}<button class="node ${st==='lock'?'lock':N.c} ${st} ${st==='cur'?'bounce':''}" data-t="${t}" data-st="${st}">${st==='lock'?'🔒':N.e}<span class="lbl">${N.n()}</span></button></div>`}).join('')}</div>
+  <div class="unitnext">🔒 유닛 ${u+2} — 이번 유닛을 끝내면 열려요</div>`}
+function bindPath(){document.querySelectorAll('.path .node').forEach(b=>b.onclick=()=>{const t=b.dataset.t,st=b.dataset.st;
+  if(st==='lock'){toast('🔒 앞 단계를 먼저 끝내요');sfx('dunno');return}
+  playNode(t,st==='cur')})}
+
+function home(){const due=dueIds();const dx=dayXP();const st=liveStreak();
   const lc=learnedCount(),gc=Object.keys(S.gdone).length;
-  const todayDone=S.days[today()]>0;
-  const units=[
-    {k:'vocab',e:'📝',c:'',lbl:`새 단어 ${nw.length}개`,go:startVocabLesson,ok:nw.length>0},
-    {k:'gram',e:'📘',c:'blue',lbl:ng?`문법: ${ng.t}`:'문법 완료!',go:()=>ng&&startGrammarLesson(ng),ok:!!ng},
-    {k:'rev',e:'🔁',c:'purple',lbl:`복습 ${due.length}개`,go:startReview,ok:due.length>0},
-    {k:'kanji',e:'漢',c:'',lbl:'한자 퀴즈',go:startKanjiLesson,ok:true},
-  ];
   $('#app').innerHTML=`
   <div class="hero"><div class="ring">🔥</div><h1>${st?`${st}일째 공부 중!`:'오늘부터 시작해요!'}</h1>
   <div class="sub">${dx>=S.goal?'오늘 목표를 달성했어요 🎉 더 하면 더 좋아요!':`오늘의 목표까지 ${S.goal-dx} XP 남았어요`}</div>
   <div class="goal"><b>🎯</b><div class="bar"><i style="width:${Math.min(100,dx/S.goal*100)}%"></i></div><b>${dx}/${S.goal}</b></div></div>
-  <div class="path">${units.map((u,i)=>`<div class="pathrow" style="transform:translateX(${[0,-60,0,60][i%4]}px)">${i===0&&u.ok?`<div class="tip">시작!</div>`:''}<button class="node ${u.ok?u.c:'lock'} ${i===0&&u.ok?'bounce':''}" data-u="${i}">${u.e}<span class="lbl">${esc(u.lbl.length>16?u.lbl.slice(0,16)+'…':u.lbl)}</span></button></div>`).join('')}</div>
+  ${pathHTML()}
+  <h2>자유 연습 <span class="mute" style="font-size:13px">경로와 상관없이</span></h2>
+  <div class="grid2" style="margin-bottom:12px">
+    <button class="mini" id="frev"><div class="t">🔁 복습</div><div class="big">${due.length}<span class="mute" style="font-size:13px"> 개 남음</span></div></button>
+    <button class="mini" id="fkan"><div class="t">漢 한자 퀴즈</div><div class="big" style="font-size:16px;margin-top:6px">8문제</div></button>
+  </div>
   <div class="grid2">
     <div class="mini"><div class="t">외운 단어</div><div class="big">${lc}<span class="mute" style="font-size:13px"> / ${V.length}</span></div><div class="bar" style="height:8px;margin-top:6px"><i style="width:${lc/V.length*100}%"></i></div></div>
     <div class="mini"><div class="t">배운 문법</div><div class="big">${gc}<span class="mute" style="font-size:13px"> / ${G.length}</span></div><div class="bar" style="height:8px;margin-top:6px"><i style="width:${gc/G.length*100}%;background:var(--b)"></i></div></div>
@@ -617,17 +691,31 @@ function home(){const due=dueIds();const nw=newWords(S.perDay);const ng=nextGram
   </div>
   <h2>🏅 업적</h2>${badgeGrid()}
   <p class="mute" style="font-size:12px;margin-top:22px;text-align:center">${CS.user?`☁️ <b>${esc(CS.id)}</b> 계정에 자동 저장되고 다른 기기와 동기화돼요.`:`학습 기록은 이 브라우저에만 저장돼요. <button class="linkbtn" onclick="acctSheet()">로그인</button>하면 컴퓨터·핸드폰에서 이어서 할 수 있어요.`}</p>`;
-  document.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const u=units[+b.dataset.u];if(!u.ok){toast(u.k==='rev'?'지금 복습할 단어가 없어요. 새 단어를 먼저 배워요!':'모두 완료했어요!');return}u.go()})}
+  bindPath();
+  $('#frev').onclick=()=>{if(!due.length){toast('지금 복습할 게 없어요 👍');return}startReview()};$('#fkan').onclick=startKanjiLesson}
 
-function startVocabLesson(){const nw=newWords(S.perDay);if(!nw.length){toast('모든 단어를 배웠어요!');return}
-  const due=shuffle(dueIds().filter(id=>id[0]==='v')).slice(0,5);
-  const items=[];nw.forEach(v=>{items.push(qMeaning(v))});shuffle(nw).forEach(v=>items.push(pick([qReading,qReverse,qListen,qWriting])(v)));
-  const all=[...items,...due];
-  runQuiz({title:'새 단어',intro:nw,items:all,hearts:3,onDone:()=>{nw.forEach(v=>{if(!S.srs['v'+v.i])srsGrade('v'+v.i,true)})}})}
-function startGrammarLesson(g){const items=[0,1,2].map(i=>qGrammar(g,i)).filter(Boolean);
-  const prev=shuffle(Object.keys(S.gdone)).slice(0,2).map(id=>qGrammar(G[+id])).filter(Boolean);
-  runQuiz({title:g.t,grammarIntro:g,items:[...items,...prev],hearts:3,onDone:({acc})=>{S.gdone[g.id]=today();save()}})}
-function startReview(){const due=shuffle(dueIds()).slice(0,15);runQuiz({title:'복습',items:due,hearts:4})}
+/* ---------------- 레슨 만들기 ---------------- */
+function nextGrammars(n){return G.filter(g=>!S.gdone[g.id]).slice(0,n)}
+function newKanji(n){return KJ.filter(k=>!S.kknown[k.c]&&!S.srs['k'+k.c]).slice(0,n)}
+// 새 단어 N개: 먼저 하나씩 배우고 → 뜻 고르기 + 여러 유형 문제 + 복습 단어 몇 개
+function startVocabLesson(after){const nw=newWords(S.perDay);if(!nw.length){toast('모든 단어를 배웠어요! 복습으로 대신해요');return startReview(after)}
+  const due=shuffle(dueIds().filter(id=>id[0]==='v')).slice(0,3);
+  const items=[...shuffle(nw).map(qMeaning),...shuffle(nw).map(v=>pick([qReading,qReverse,qListen,qWriting])(v))];
+  runQuiz({title:'새 단어',intro:nw.map(v=>({t:'v',v})),items:[...items,...due],hearts:4,onDone:()=>{nw.forEach(v=>{if(!S.srs['v'+v.i])srsGrade('v'+v.i,true)});after&&after()}})}
+// 새 문법 여러 개: 전부 먼저 배우고 → 섞어서(뜻 고르기 + 빈칸) 풀기 + 전에 배운 문법 2문제
+function startGrammarLesson(gs,after){gs=[].concat(gs).filter(Boolean);if(!gs.length){toast('문법을 모두 배웠어요! 복습으로 대신해요');return startReview(after)}
+  const items=[];gs.forEach(g=>{items.push(qGrammarMean(g,gs));const seen=new Set();[0,1].forEach(i=>{const q=qGrammar(g,i);if(q&&!seen.has(q.prompt)){seen.add(q.prompt);items.push(q)}})});
+  const old=shuffle(Object.keys(S.gdone).filter(id=>!gs.some(g=>g.id===+id))).slice(0,2).map(id=>qGrammar(G[+id])).filter(Boolean);
+  runQuiz({title:'문법',intro:gs.map(g=>({t:'g',g})),items:[...shuffle(items),...old],hearts:4,onDone:()=>{gs.forEach(g=>{S.gdone[g.id]=S.gdone[g.id]||today()});save();after&&after()}})}
+// 새 한자 N자: 훈음·음독·훈독·예시 단어를 배우고 → 훈음 고르기 + 읽기 고르기
+function startKanjiLearn(after){const ks=newKanji(S.kPer);if(!ks.length){toast('한자를 모두 배웠어요! 복습으로 대신해요');return startReview(after)}
+  const items=[];ks.forEach(k=>{items.push(qKanji(k));const y=qKanjiYomi(k);if(y)items.push(y)});
+  runQuiz({title:'새 한자',intro:ks.map(k=>({t:'k',k})),items:shuffle(items),hearts:4,onDone:({log})=>{log.forEach(l=>{if(l.ok&&l.q.id&&l.q.id[0]==='k')S.kknown[l.q.id.slice(1)]=1});ks.forEach(k=>{if(!S.srs['k'+k.c])srsGrade('k'+k.c,true)});save();after&&after()}})}
+// 복습: 때가 된 것 먼저, 모자라면 배운 것 중에서 섞어서
+function startReview(after,big){const n=big?15:10;let ids=shuffle(dueIds()).slice(0,n);
+  if(ids.length<n){const pool=shuffle(Object.keys(S.srs).filter(id=>!ids.includes(id)));ids=[...ids,...pool.slice(0,n-ids.length)]}
+  if(!ids.length){toast('아직 복습할 게 없어요. 새 단어부터 배워요!');return}
+  runQuiz({title:big?'유닛 복습':'복습',items:ids,hearts:big?5:4,onDone:()=>{after&&after()}})}
 function startKanjiLesson(){const unk=KJ.filter(k=>!S.kknown[k.c]);const set=sample(unk.length>=8?unk.slice(0,40):KJ,8);
   runQuiz({title:'한자',items:set.map(qKanji),hearts:3,onDone:({log})=>{log.forEach(l=>{if(l.ok&&l.q.id[0]==='k')S.kknown[l.q.id.slice(1)]=1});save()}})}
 
@@ -794,7 +882,7 @@ function mergeS(a,b){const L=a;
   const ex=new Map();[...(a.exams||[]),...(b.exams||[])].forEach(e=>ex.set(stable(e),e));
   r.exams=[...ex.entries()].sort((x,y)=>(x[1].d||'')<(y[1].d||'')?-1:(x[1].d||'')>(y[1].d||'')?1:x[0]<y[0]?-1:x[0]>y[0]?1:0).map(x=>x[1]);
   r.xp=Math.max(a.xp||0,b.xp||0,Object.values(r.days).reduce((s,x)=>s+x,0));
-  for(const k of ['lessons','perfect','best'])r[k]=Math.max(a[k]||0,b[k]||0);
+  for(const k of ['lessons','perfect','best','step'])r[k]=Math.max(a[k]||0,b[k]||0);
   if((a.last||'')!==(b.last||'')){const w=(a.last||'')>(b.last||'')?a:b;r.last=w.last;r.streak=w.streak;r.freezes=w.freezes}
   else{r.streak=Math.max(a.streak||0,b.streak||0);r.freezes=Math.min(a.freezes||0,b.freezes||0)}
   r.best=Math.max(r.best,r.streak);r._ut=Math.max(ua,ub);r.voice=L.voice;
