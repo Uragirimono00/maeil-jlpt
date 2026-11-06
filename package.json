@@ -1,0 +1,14 @@
+{
+  "name": "maeil-n3",
+  "version": "1.0.0",
+  "private": true,
+  "description": "매일 N3 — JLPT N3 일본어 매일 학습 사이트 (후리가나·TTS·게임화)",
+  "scripts": {
+    "build:data": "node scripts/build-data.js",
+    "build": "node scripts/build-data.js && node scripts/bundle.js",
+    "dev": "npm run build && npx --yes serve dist -l 5173"
+  },
+  "devDependencies": {
+    "kuromoji": "^0.1.2"
+  }
+}
