@@ -6,8 +6,8 @@ service cloud.firestore {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['data', 'ut', 'v'])
-        && request.resource.data.data is string
-        && request.resource.data.data.size() < 800000;
+        && request.resource.data['data'] is string
+        && request.resource.data['data'].size() < 800000;
     }
   }
 }

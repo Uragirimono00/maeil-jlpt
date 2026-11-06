@@ -454,7 +454,7 @@ function xpFloat(txt,el){if(!S.anim||!el)return;const r=el.getBoundingClientRect
 // 숫자가 0부터 올라가는 효과
 function countUp(el,to,suf=''){if(!el)return;if(!S.anim||!to){el.firstChild.textContent=to+suf;return}const t0=performance.now(),D=900;
   const f=now=>{const k=Math.min(1,(now-t0)/D),e=1-Math.pow(1-k,3);el.firstChild.textContent=Math.round(to*e)+suf;if(k<1)requestAnimationFrame(f)};el.firstChild.textContent='0'+suf;setTimeout(()=>requestAnimationFrame(f),250)}
-function closeQuiz(){if(Q&&Q.timer)clearInterval(Q.timer);const o=$('#quiz');if(o)o.remove();$('.fb')?.remove();document.body.style.overflow='';Q=null;try{speechSynthesis.cancel()}catch(e){}render()}
+function closeQuiz(){NEEDR=false;if(Q&&Q.timer)clearInterval(Q.timer);const o=$('#quiz');if(o)o.remove();$('.fb')?.remove();document.body.style.overflow='';Q=null;try{speechSynthesis.cancel()}catch(e){}render()}
 function qTop(){const pct=Q.pct||0;
   return `<div class="qhead"><button class="x" onclick="confirmQuit()">✕</button><div class="bar"><i style="width:${pct}%"></i></div>${Q.timed?`<span class="timer" id="qtimer"></span>`:`<span class="hearts">${heartsH()}</span>`}</div>`}
 function confirmQuit(){sheet(`<h2 style="margin-top:0">정말 그만둘까요?</h2><p class="mute">지금 나가면 이번 레슨 진행 상황이 사라져요.</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">계속하기</button><button class="btn red grow" onclick="closeSheet();closeQuiz()">그만두기</button></div>`)}
@@ -525,7 +525,8 @@ function examReview(log){return `<div class="card" style="text-align:left"><b>�
 
 /* ---------------- sheets ---------------- */
 function sheet(h){if(!$('#sheet'))sfx('sheet');closeSheet();const d=document.createElement('div');d.className='sheet';d.id='sheet';d.innerHTML=`<div>${h}</div>`;d.onclick=e=>{if(e.target===d)closeSheet()};document.body.appendChild(d)}
-function closeSheet(){$('#sheet')?.remove()}
+let NEEDR=false;  // 창이 열려 있어서 미뤄 둔 화면 갱신
+function closeSheet(){$('#sheet')?.remove();if(NEEDR&&!Q&&!$('#fl')&&!$('#gd')){NEEDR=false;render()}}
 
 /* ---------------- header ---------------- */
 const HPREV={};
@@ -644,11 +645,11 @@ function vocabView(){const POS=['전체','명사','동사','い형용사','な�
   <div class="chips" id="vst">${['전체','학습함','아직','★ 즐겨찾기'].map(p=>`<button class="${vf.st===p?'on':''}" data-p="${p}">${p}</button>`).join('')}</div>
   <div class="row" style="margin-bottom:12px"><span class="mute grow" id="vc"></span><button class="btn blue" id="vflash" style="padding:9px 14px">🃏 플래시카드</button></div>
   <div class="list" id="vl"></div><div style="text-align:center;margin-top:12px"><button class="btn ghost" id="vmore" style="display:none">더 보기</button></div>`;
-  const filt=()=>{const q=vf.q.trim().toLowerCase();return VORD.filter(v=>(vf.pos==='전체'||v.p===vf.pos)&&(!q||v.w.includes(q)||v.r.includes(q)||v.k.toLowerCase().includes(q))&&(vf.st==='전체'||(vf.st==='학습함'?S.srs['v'+v.i]:vf.st==='아직'?!S.srs['v'+v.i]:S.star[v.i])))};
+  const filt=()=>{const q=vf.q.trim().toLowerCase();return VORD.filter(v=>(vf.pos==='전체'||v.p===vf.pos)&&(!q||v.w.includes(q)||v.r.includes(q)||v.k.toLowerCase().includes(q))&&(vf.st==='전체'||(vf.st==='학습함'?S.srs['v'+v.i]:vf.st==='아직'?!S.srs['v'+v.i]:S.star[v.i]>0)))};
   const draw=()=>{const L=filt();$('#vc').textContent=`${L.length}개`;
-    $('#vl').innerHTML=L.length?L.slice(0,vf.lim).map(v=>`<div class="vitem"><button class="star ${S.star[v.i]?'on':''}" data-s="${v.i}">★</button><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)} <span class="chip" style="font-size:10px;padding:1px 7px">${v.p}</span> ${S.srs['v'+v.i]?'<span style="color:var(--g);font-size:12px;font-weight:800">✓</span>':''}</div></div>${spk(v.f)}</div>`).join(''):'<div class="empty">조건에 맞는 단어가 없어요</div>';
+    $('#vl').innerHTML=L.length?L.slice(0,vf.lim).map(v=>`<div class="vitem"><button class="star ${S.star[v.i]>0?'on':''}" data-s="${v.i}">★</button><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)} <span class="chip" style="font-size:10px;padding:1px 7px">${v.p}</span> ${S.srs['v'+v.i]?'<span style="color:var(--g);font-size:12px;font-weight:800">✓</span>':''}</div></div>${spk(v.f)}</div>`).join(''):'<div class="empty">조건에 맞는 단어가 없어요</div>';
     $('#vmore').style.display=L.length>vf.lim?'':'none';
-    document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const i=b.dataset.s;if(S.star[i])delete S.star[i];else S.star[i]=1;b.classList.toggle('on');save()})};
+    document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const i=b.dataset.s;S.star[i]=S.star[i]>0?-Date.now():Date.now();b.classList.toggle('on');save()})};
   $('#vs').oninput=e=>{vf.q=e.target.value;vf.lim=80;draw()};
   document.querySelectorAll('#vp button').forEach(b=>b.onclick=()=>{vf.pos=b.dataset.p;vf.lim=80;vocabView()});
   document.querySelectorAll('#vst button').forEach(b=>b.onclick=()=>{vf.st=b.dataset.p;vf.lim=80;vocabView()});
@@ -772,7 +773,8 @@ function mergeS(a,b){const L=a;
   const better=(p,q)=>{const pn=p.n||0,qn=q.n||0;if(pn!==qn)return pn>qn?p:q;if(p.d!==q.d)return p.d>q.d?p:q;return stable(p)>=stable(q)?p:q};
   r.srs={...(a.srs||{})};for(const k in (b.srs||{}))r.srs[k]=r.srs[k]?better(r.srs[k],b.srs[k]):b.srs[k];
   r.gdone={...o.gdone,...n.gdone};r.kknown={...o.kknown,...n.kknown};r.badges={...o.badges,...n.badges};
-  r.star={...(n.star||{})};
+  // 즐겨찾기 값은 바꾼 시각(+켬 / -끔) → 단어마다 더 나중에 바꾼 쪽
+  r.star={...(a.star||{})};for(const k in (b.star||{})){const x=r.star[k],y=b.star[k];r.star[k]=x==null||Math.abs(y)>Math.abs(x)||(Math.abs(y)===Math.abs(x)&&y>x)?y:x}
   const ex=new Map();[...(a.exams||[]),...(b.exams||[])].forEach(e=>ex.set(stable(e),e));
   r.exams=[...ex.entries()].sort((x,y)=>(x[1].d||'')<(y[1].d||'')?-1:(x[1].d||'')>(y[1].d||'')?1:x[0]<y[0]?-1:x[0]>y[0]?1:0).map(x=>x[1]);
   r.xp=Math.max(a.xp||0,b.xp||0,Object.values(r.days).reduce((s,x)=>s+x,0));
@@ -786,7 +788,7 @@ function syncUI(){const i=$('#iAcc');if(i){i.className=CS.status==='syncing'?'sp
 function syncLine(){const t=CS.last?new Date(CS.last).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'';
   return `<span class="syncdot ${CS.status}"></span>${CS.status==='syncing'?'동기화 중…':CS.status==='ok'?`동기화됨${t?' · '+t:''}`:CS.status==='offline'?'오프라인 — 연결되면 자동으로 올라가요':CS.status==='error'?`동기화 오류 (${esc(CS.err)}) — 잠시 후 다시 시도해요`:''}`}
 // 다른 기기에서 바뀐 기록이 들어왔을 때 화면 갱신 (문제 푸는 중이면 화면은 그대로 두고 상단 숫자만)
-function refreshUI(){if(Q||$('#fl')||$('#gd'))hdr();else if($('#sheet'))hdr();else render()}
+function refreshUI(){if(Q||$('#fl')||$('#gd')||$('#sheet')){hdr();NEEDR=true}else render()}
 function applyRemote(d,first){const uid=CS.user.uid;let R=null;if(d&&typeof d.data==='string'){try{R=JSON.parse(d.data)}catch(e){}}
   let M;
   if(!R)M={...S};
@@ -801,7 +803,7 @@ async function onUser(u){if(unsub){unsub();unsub=null}clearTimeout(pushT);
   if($('#sheet .acc')||$('#acSt'))acctSheet();   // 열려 있는 계정 창을 새 상태로
   if(!u){CS.status='off';syncUI();refreshUI();return}
   try{localStorage.setItem(AUTHFLAG,'1')}catch(e){}
-  CS.status='syncing';syncUI();
+  CS.status='syncing';syncUI();refreshUI();
   const {F}=FB,ref=F.doc(FB.db,'users',u.uid);let first=true;
   unsub=F.onSnapshot(ref,s=>{if(s.metadata.hasPendingWrites)return;if(!CS.user||CS.user.uid!==u.uid)return;applyRemote(s.exists()?s.data():null,first);first=false},
     e=>{CS.status=navigator.onLine?'error':'offline';CS.err=e.code||'';syncUI()})}
