@@ -181,6 +181,83 @@ select{padding:8px;border-radius:10px;border:2px solid var(--line);background:va
 .tog:checked:after{left:21px}
 .timer{font-weight:800;color:var(--mute);font-variant-numeric:tabular-nums}
 .empty{text-align:center;color:var(--mute);padding:30px}
+/* account */
+.acc input{margin-bottom:10px}
+input[type=password]{width:100%;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;font-family:inherit;outline:none}
+.acmsg{min-height:20px;font-size:13px;font-weight:700;margin:2px 0 10px}
+.acmsg.err{color:var(--r)}
+.acmsg.ok{color:var(--g-d)}
+.syncdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--soft);margin-right:6px;vertical-align:middle}
+.syncdot.ok{background:var(--g)}.syncdot.syncing{background:var(--b)}.syncdot.error,.syncdot.offline{background:var(--r)}
+.linkbtn{color:var(--b);font-weight:800;text-decoration:underline}
+
+/* ---------------- animation ----------------
+   body.anim 일 때만 켜진다 (설정 > 애니메이션, OS의 '동작 줄이기'를 켜면 기본 꺼짐) */
+body:not(.anim) *,body:not(.anim) *:before,body:not(.anim) *:after{animation:none!important;transition:none!important}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes slideUp{from{transform:translateY(100%)}}
+@keyframes ovIn{from{opacity:0;transform:translateY(24px) scale(.98)}}
+@keyframes nodeIn{0%{opacity:0;transform:scale(.3)}70%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes okPop{0%{transform:scale(1)}40%{transform:scale(1.045)}100%{transform:scale(1)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(88,204,2,.55),0 4px 0 var(--g)}100%{box-shadow:0 0 0 14px rgba(88,204,2,0),0 4px 0 var(--g)}}
+@keyframes xpUp{0%{opacity:0;transform:translateY(6px) scale(.7)}25%{opacity:1;transform:translateY(-6px) scale(1.15)}100%{opacity:0;transform:translateY(-46px) scale(1)}}
+@keyframes flame{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.18) rotate(3deg)}}
+@keyframes hbreak{0%{transform:scale(1)}30%{transform:scale(1.6)}100%{transform:scale(1);filter:grayscale(1);opacity:.5}}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes wiggle{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(8deg)}80%{transform:rotate(-4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes shine{from{background-position:-200% 0}to{background-position:200% 0}}
+@keyframes flipIn{from{transform:perspective(900px) rotateY(-90deg)}to{transform:perspective(900px) rotateY(0)}}
+@keyframes cardIn{from{opacity:0;transform:translateX(40px) rotate(3deg)}}
+@keyframes ring{0%{transform:scale(.9);opacity:.7}100%{transform:scale(1.6);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes toastOut{to{opacity:0;transform:translate(-50%,-14px)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(6deg)}}
+.anim #app.enter>*{animation:rise .42s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*45ms)}
+.anim #app.enter .node{animation:nodeIn .5s cubic-bezier(.3,1.4,.5,1) backwards;animation-delay:calc(120ms + var(--n,0)*90ms)}
+.anim #app.enter .node.bounce{animation:nodeIn .5s cubic-bezier(.3,1.4,.5,1) backwards,bounce 1.4s .9s infinite}
+.anim .bar>i{animation:fillw .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes fillw{from{width:0}}
+.anim .qhead .bar>i{animation:none;transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.anim .bar>i:after{content:"";display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);background-size:200% 100%;animation:shine 2.6s linear infinite}
+.anim .hero .ring{animation:float 4s ease-in-out infinite}
+.anim .node.bounce:before{content:"";position:absolute;inset:-6px;border-radius:50%;border:3px solid var(--g);animation:ring 1.6s ease-out infinite}
+.anim .ov{animation:ovIn .3s cubic-bezier(.2,.8,.2,1)}
+.anim .sheet{animation:fadeIn .2s}
+.anim .sheet>div{animation:slideUp .32s cubic-bezier(.2,.9,.3,1)}
+.anim .qanim .qtype,.anim .qanim .qprompt{animation:rise .35s cubic-bezier(.2,.8,.2,1) backwards}
+.anim .qanim .qprompt{animation-delay:.05s}
+.anim .qanim .opt{animation:rise .35s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(.1s + var(--i,0)*55ms)}
+.anim .opt{transition:transform .08s,border-color .15s,background .15s}
+.anim .opt:active{transform:translateY(2px)}
+.anim .opt.sel{transform:scale(1.015)}
+.anim .opt.ok{animation:okPop .4s,glow .7s ease-out}
+.anim .opt.ng{animation:shake .35s}
+.anim .fb.ok,.anim .fb.ng{animation:slideUp .28s cubic-bezier(.2,.9,.3,1)}
+.anim .fb .t{animation:pop .35s}
+.xpf{position:fixed;z-index:90;pointer-events:none;font-weight:900;font-size:22px;color:var(--y);text-shadow:0 2px 0 #d9a800,0 0 12px rgba(255,200,0,.5);animation:xpUp 1.1s ease-out forwards}
+.anim .combo.hot{animation:flame .5s ease-in-out infinite;display:block}
+.hearts .h{display:inline-block}
+.anim .hearts .h.lost{animation:hbreak .7s ease-out forwards}
+.anim .stat.bump .n,.anim .stat.bump>span:first-child{display:inline-block;animation:bump .45s}
+.anim .result .e{animation:wiggle .7s cubic-bezier(.3,1.4,.5,1) backwards}
+.anim .result h1{animation:rise .4s .15s backwards}
+.anim .result .stats div{animation:nodeIn .5s cubic-bezier(.3,1.4,.5,1) backwards}
+.anim .result .stats div:nth-child(1){animation-delay:.25s}.anim .result .stats div:nth-child(2){animation-delay:.35s}.anim .result .stats div:nth-child(3){animation-delay:.45s}
+.anim .result .card{animation:rise .4s .55s backwards}
+.anim .lvup{background:linear-gradient(110deg,var(--card) 40%,rgba(255,200,0,.35) 50%,var(--card) 60%);background-size:200% 100%;animation:shine 1.8s linear infinite,rise .4s .55s backwards}
+.anim .intro .w{animation:wiggle .55s cubic-bezier(.3,1.4,.5,1) backwards}
+.anim .intro .k,.anim .intro .chip,.anim .intro .card{animation:rise .4s .15s backwards}
+.anim #flc.flip{animation:flipIn .32s cubic-bezier(.2,.8,.2,1)}
+.anim #flc.next{animation:cardIn .3s cubic-bezier(.2,.8,.2,1)}
+.anim .badge:not(.off){transition:transform .15s}
+.anim .badge:not(.off):hover{transform:translateY(-3px) rotate(-2deg)}
+.anim .badge.new{animation:wiggle .7s cubic-bezier(.3,1.4,.5,1)}
+.anim .kcell,.anim .kc,.anim .mini,.anim .gitem{transition:transform .12s}
+.anim .kcell:active,.anim .kc:active,.anim .mini:active{transform:scale(.94)}
+.anim .btn:hover:not(:disabled){filter:brightness(1.06)}
+.anim .toast{animation:pop .3s,toastOut .3s 1.9s forwards}
+.anim .spin{display:inline-block;animation:spin 1s linear infinite}
 </style>
 </head>
 <body>
@@ -189,6 +266,7 @@ select{padding:8px;border-radius:10px;border:2px solid var(--line);background:va
   <button class="stat" id="sStreak" title="연속 학습일"><span>🔥</span><span class="n" id="nStreak">0</span></button>
   <button class="stat" id="sGem" title="총 XP"><span>⚡</span><span class="n" id="nXP">0</span></button>
   <button class="stat" id="sLv" title="레벨"><span>🏅</span><span class="n" id="nLv">1</span></button>
+  <button class="stat" id="sAcc" title="계정 · 동기화"><span id="iAcc">👤</span></button>
   <button class="stat" id="sSet" title="설정"><span>⚙️</span></button>
 </div></div>
 <div id="app"></div>
@@ -211,9 +289,11 @@ const KEY='maeil-n3-v1';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dayDiff=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 const addDays=(s,n)=>{const d=new Date(s);d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const DEF={xp:0,streak:0,best:0,last:null,days:{},goal:50,perDay:5,srs:{},gdone:{},kana:{},kknown:{},star:{},furi:true,rate:.9,voice:'auto',sfx:true,exams:[],badges:{},lessons:0,perfect:0,freezes:0};
+const DEF={xp:0,streak:0,best:0,last:null,days:{},goal:50,perDay:5,srs:{},gdone:{},kana:{},kknown:{},star:{},furi:true,rate:.9,voice:'auto',sfx:true,vol:.7,anim:!matchMedia('(prefers-reduced-motion: reduce)').matches,exams:[],badges:{},lessons:0,perfect:0,freezes:0};
+// _ut: 마지막 수정 시각(ms) · _ep: 초기화 횟수(초기화가 다른 기기에도 퍼지게) · _uid: 이 기록이 연결된 계정
 let S; try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S={...DEF}}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){S._ut=Date.now();saveLocal();if(typeof queuePush==='function')queuePush()}
 function dayXP(){return (S.days[today()]||0)}
 function addXP(n){S.xp+=n;S.days[today()]=(S.days[today()]||0)+n;touchStreak();save();hdr()}
 function touchStreak(){const t=today();if(S.last===t)return;
@@ -244,24 +324,66 @@ const hasK=s=>/[一-鿿々]/.test(s);
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 function confetti(){const c=document.createElement('div');c.className='confetti';const cols=['#58cc02','#1cb0f6','#ffc800','#ff4b4b','#ce82ff','#ff9600'];for(let i=0;i<70;i++){const e=document.createElement('i');e.style.left=Math.random()*100+'%';e.style.background=pick(cols);e.style.animationDuration=(1.6+Math.random()*1.6)+'s';e.style.animationDelay=Math.random()*.4+'s';c.appendChild(e)}document.body.appendChild(c);setTimeout(()=>c.remove(),3600)}
 
-/* ---------------- TTS ---------------- */
+/* ---------------- TTS ----------------
+   화면의 후리가나대로 읽히도록, 후리가나가 달린 한자는 읽기(가나)로 바꿔서 음성 엔진에 넘긴다.
+   (예: 日{にち} → にち. 한자만 넘기면 엔진이 문맥 없이 ひ 처럼 제멋대로 읽는다) */
+const yomi=s=>String(s).replace(/([^\s{}\[\]、。，！？「」（）・ー぀-ゟ゠-ヿ\w]+?)\{([^}]+)\}/g,'$2').replace(/\[\[|\]\]/g,'');
+const kyomi=r=>String(r).replace(/[-()（）.]/g,'');  // 한자 음훈 표기(あ(がる), -さ)를 소리 낼 수 있게
 let VOICES=[];
-function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/ja/i.test(v.lang))}catch(e){}}
+// 음질 좋은 음성을 앞으로: Natural/Online(Edge) > Google > Apple 음성 > 구형 음성(Haruka 등)
+function vscore(v){const n=v.name;let s=0;if(/natural|neural|online|premium|enhanced/i.test(n))s+=50;if(/google/i.test(n))s+=30;if(/nanami|keita|kyoko|otoya|o-ren|hattori/i.test(n))s+=10;if(/haruka|ayumi|ichiro|sayaka/i.test(n))s-=5;return s}
+function loadVoices(){try{VOICES=speechSynthesis.getVoices().filter(v=>/ja/i.test(v.lang)).sort((a,b)=>vscore(b)-vscore(a))}catch(e){}}
 try{loadVoices();speechSynthesis.onvoiceschanged=loadVoices}catch(e){}
-const FEM=/(kyoko|o-ren|haruka|ayumi|nanami|mizuki|female|女性|sayaka|google 日本語)/i, MAL=/(otoya|ichiro|keita|hattori|male|男性|daichi|naoki)/i;
+const FEM=/(nanami|kyoko|o-ren|haruka|ayumi|mizuki|sayaka|aoi|mayu|shiori|female|女性|google 日本語)/i, MAL=/(keita|otoya|ichiro|hattori|daichi|naoki|\bmale|男性)/i;
 function voiceFor(g){if(!VOICES.length)loadVoices();if(!VOICES.length)return null;
   if(S.voice!=='auto'&&!g){const v=VOICES.find(v=>v.name===S.voice);if(v)return v}
-  if(g==='m'){return VOICES.find(v=>MAL.test(v.name))||VOICES[0]}
-  if(g==='f'){return VOICES.find(v=>FEM.test(v.name))||VOICES[0]}
-  return VOICES.find(v=>FEM.test(v.name))||VOICES[0]}
-function speak(text,g){try{const t=plain(text);speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=S.rate;const v=voiceFor(g);if(v)u.voice=v;
-  if(g==='m'&&v&&!MAL.test(v.name))u.pitch=.6;speechSynthesis.speak(u)}catch(e){toast('이 브라우저는 음성 재생을 지원하지 않아요')}}
+  const best=VOICES[0],ok=v=>vscore(v)>=vscore(best)-20;
+  if(g==='m')return VOICES.find(v=>MAL.test(v.name)&&ok(v))||best;
+  return VOICES.find(v=>FEM.test(v.name)&&!MAL.test(v.name)&&ok(v))||best}
+let spT;
+function speak(text,g,delay=0){try{const t=yomi(text).trim();if(!t)return;const ss=speechSynthesis;
+  const busy=ss.speaking||ss.pending;ss.cancel();clearTimeout(spT);
+  const go=()=>{const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=S.rate;u.volume=1;const v=voiceFor(g);if(v)u.voice=v;
+    if(g==='m'&&(!v||!MAL.test(v.name)))u.pitch=.8;ss.speak(u)};
+  // 크롬은 cancel 직후 바로 speak 하면 앞부분이 잘리거나 뭉개질 때가 있어 잠깐 쉬었다 읽는다
+  if(busy||delay)spT=setTimeout(go,Math.max(delay,busy?90:0));else go()}catch(e){toast('이 브라우저는 음성 재생을 지원하지 않아요')}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){e.stopPropagation();speak(b.dataset.say,b.dataset.g)}},true);
-const spk=(t,cls='',g='')=>`<button class="spk ${cls}" data-say="${esc(plain(t))}" ${g?`data-g="${g}"`:''} aria-label="듣기">🔊</button>`;
+const spk=(t,cls='',g='')=>`<button class="spk ${cls}" data-say="${esc(t)}" ${g?`data-g="${g}"`:''} aria-label="듣기">🔊</button>`;
 
-/* sound fx */
-let AC;function beep(ok){if(!S.sfx)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime;
-  const notes=ok?[[659,0],[880,.09]]:[[220,0],[180,.12]];notes.forEach(([f,d])=>{const o=AC.createOscillator(),g=AC.createGain();o.type=ok?'triangle':'sawtooth';o.frequency.value=f;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(ok?.18:.08,t+d+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d+.18);o.connect(g).connect(AC.destination);o.start(t+d);o.stop(t+d+.2)})}catch(e){}}
+/* ---------------- sound fx ----------------
+   효과음은 전부 Web Audio로 합성한다(음원 파일 없음). sfx('ok') 처럼 부른다 */
+let AC,MG,acIdle;
+function audio(){if(AC)return AC;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;AC=new C();MG=AC.createGain();MG.gain.value=S.vol;MG.connect(AC.destination);return AC}
+function tone(t,f,d,{to,type='triangle',v=.2,at=.008}={}){const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+at);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(MG);o.start(t);o.stop(t+d+.05)}
+function hiss(t,d,{f=1500,to,q=1.2,v=.12}={}){const b=AC.createBuffer(1,Math.ceil(AC.sampleRate*d),AC.sampleRate),c=b.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.random()*2-1;
+  const s=AC.createBufferSource();s.buffer=b;const bf=AC.createBiquadFilter();bf.type='bandpass';bf.Q.value=q;bf.frequency.setValueAtTime(f,t);if(to)bf.frequency.exponentialRampToValueAtTime(to,t+d);
+  const g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+d*.3);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(bf).connect(g).connect(MG);s.start(t);s.stop(t+d+.02)}
+const arp=(t,fs,step,d,o={})=>fs.forEach((f,i)=>tone(t+i*step,f,d,o));
+const SFX={
+  tap:t=>tone(t,1100,.05,{to:700,v:.07}),
+  ok:t=>{tone(t,784,.14,{v:.2});tone(t+.08,1175,.32,{v:.22});tone(t+.08,2350,.26,{type:'sine',v:.04})},
+  ng:t=>{tone(t,220,.16,{to:180,type:'square',v:.06});tone(t+.14,165,.3,{to:130,type:'square',v:.06})},
+  combo:(t,n)=>{const b=523*Math.pow(2,Math.min(12,n-3)/12);arp(t,[b,b*1.26,b*1.5,b*2],.055,.16,{v:.12})},
+  start:t=>{tone(t,392,.22,{to:784,type:'sine',v:.14});hiss(t,.22,{f:800,to:3000,v:.05})},
+  flip:t=>hiss(t,.16,{f:700,to:2600,v:.1}),
+  sheet:t=>hiss(t,.14,{f:500,to:1500,v:.05}),
+  know:t=>tone(t,660,.1,{to:990,type:'sine',v:.14}),
+  dunno:t=>tone(t,440,.14,{to:330,type:'sine',v:.12}),
+  win:t=>{arp(t,[523,659,784],.09,.2,{v:.16});tone(t+.27,1047,.6,{v:.18});tone(t+.27,1319,.6,{type:'sine',v:.07});tone(t+.27,784,.6,{type:'sine',v:.07})},
+  fail:t=>arp(t,[392,330,262],.18,.32,{v:.13}),
+  level:t=>{arp(t,[392,523,659,784],.08,.18,{v:.14});[1047,1319,1568].forEach(f=>tone(t+.34,f,.8,{v:.09}));arp(t+.4,[2093,2637,3136,2637,3136],.06,.12,{type:'sine',v:.03})},
+  goal:t=>{arp(t,[659,784,988],.08,.18,{v:.14});tone(t+.24,1319,.5,{v:.16})},
+  badge:t=>arp(t,[1568,2093,2637,3136,4186],.05,.22,{type:'sine',v:.06}),
+  coin:t=>{tone(t,988,.07,{type:'square',v:.045});tone(t+.07,1319,.25,{type:'square',v:.045})},
+};
+function sfx(name,arg){if(!S.sfx||!SFX[name])return;const a=audio();if(!a)return;
+  const go=()=>{try{MG.gain.value=S.vol;SFX[name](a.currentTime+.01,arg)}catch(e){}
+    // 한동안 안 쓰면 오디오를 쉬게 해서 TTS 음성과 부딪히지 않게 한다(특히 iOS)
+    clearTimeout(acIdle);acIdle=setTimeout(()=>{try{a.suspend()}catch(e){}},3000)};
+  if(a.state!=='running')a.resume().then(go,()=>{});else go()}
+// 버튼 탭 소리 (자기 소리가 따로 있는 버튼은 뺀다)
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(b&&!b.disabled&&!b.closest('[data-say],#chk,#flc,#fly,#fln'))sfx('tap')},true);
 
 /* ---------------- SRS ---------------- */
 const IV=[0,1,2,4,7,15,30,60];
@@ -292,9 +414,9 @@ function mutate(r){const ops=[
 function distract(v,n,key,filt=()=>true){const pool=V.filter(x=>x.w!==v.w&&x.k!==v.k&&x[key]!==v[key]&&filt(x));
   const same=pool.filter(x=>x.p===v.p);const out=[];for(const x of [...shuffle(same.length>=n*3?same:pool),...shuffle(pool)]){if(!out.some(o=>o[key]===x[key]||o.k===x.k))out.push(x);if(out.length>=n)break}return out}
 const POSNM={'동사':'동사','명사':'명사'};
-function qMeaning(v){const ds=distract(v,3,'k');return {id:'v'+v.i,type:'뜻을 고르세요',prompt:ruby(v.f),say:v.w,cls:'',opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`}}
-function qReverse(v){const ds=distract(v,3,'w');return {id:'v'+v.i,type:'알맞은 일본어를 고르세요',prompt:`<span style="font-size:24px;font-weight:800">${esc(v.k)}</span>`,opts:shuffle([{h:`<span class="jp">${ruby(v.f)}</span>`,ok:1,say:v.w},...ds.map(d=>({h:`<span class="jp">${ruby(d.f)}</span>`,say:d.w}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.w}}
-function qReading(v){if(!hasK(v.w))return qMeaning(v);const ds=mutate(v.r);return {id:'v'+v.i,type:'漢字読み — 읽는 법을 고르세요',prompt:`<span class="jp">${esc(v.w)}</span>`,nofuri:1,opts:shuffle([{h:`<span class="jp">${v.r}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${d}</span>`}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.w}}
+function qMeaning(v){const ds=distract(v,3,'k');return {id:'v'+v.i,type:'뜻을 고르세요',prompt:ruby(v.f),say:v.f,cls:'',opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`}}
+function qReverse(v){const ds=distract(v,3,'w');return {id:'v'+v.i,type:'알맞은 일본어를 고르세요',prompt:`<span style="font-size:24px;font-weight:800">${esc(v.k)}</span>`,opts:shuffle([{h:`<span class="jp">${ruby(v.f)}</span>`,ok:1,say:v.f},...ds.map(d=>({h:`<span class="jp">${ruby(d.f)}</span>`,say:d.f}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.f}}
+function qReading(v){if(!hasK(v.w))return qMeaning(v);const ds=mutate(v.r);return {id:'v'+v.i,type:'漢字読み — 읽는 법을 고르세요',prompt:`<span class="jp">${esc(v.w)}</span>`,nofuri:1,opts:shuffle([{h:`<span class="jp">${v.r}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${d}</span>`}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.f}}
 function qWriting(v){if(!hasK(v.w))return qReverse(v);
   let ds=(byW[v.r]||[]).filter(x=>x.w!==v.w&&hasK(x.w)).map(x=>x.w);
   const ks=[...v.w].filter(c=>hasK(c));
@@ -303,16 +425,16 @@ function qWriting(v){if(!hasK(v.w))return qReverse(v);
     // swap one kanji with a similar-looking/random N3 kanji
     while(ds.length<3){const c=pick(ks);const s=v.w.replace(c,pick(KJ).c);if(s!==v.w&&!ds.includes(s))ds.push(s)}}
   ds=ds.slice(0,3);
-  return {id:'v'+v.i,type:'表記 — 알맞은 한자를 고르세요',prompt:`<span class="jp">${v.r}</span>`,say:v.r,opts:shuffle([{h:`<span class="jp">${esc(v.w)}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${esc(d)}</span>`}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.w}}
-function qListen(v){const ds=distract(v,3,'k');return {id:'v'+v.i,type:'듣고 뜻을 고르세요',listen:v.w,prompt:`<button class="btn blue" data-say="${esc(v.w)}" style="font-size:22px;padding:18px 28px">🔊 다시 듣기</button>`,opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`}}
+  return {id:'v'+v.i,type:'表記 — 알맞은 한자를 고르세요',prompt:`<span class="jp">${v.r}</span>`,say:v.r,opts:shuffle([{h:`<span class="jp">${esc(v.w)}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${esc(d)}</span>`}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`,sayAfter:v.f}}
+function qListen(v){const ds=distract(v,3,'k');return {id:'v'+v.i,type:'듣고 뜻을 고르세요',listen:v.f,prompt:`<button class="btn blue" data-say="${esc(v.f)}" style="font-size:22px;padding:18px 28px">🔊 다시 듣기</button>`,opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${ruby(v.f)} — ${esc(v.k)}`}}
 const GMARK=G.flatMap(g=>g.s.map(s=>{const m=s.j.match(/\[\[(.*?)\]\]/g);return m&&m.length===1?{g:g.id,f:m[0].slice(2,-2)}:null}).filter(Boolean)).filter(x=>plain(x.f).length<=9);
 function qGrammar(g,si){const cand=g.s.map((s,i)=>[s,i]).filter(([s])=>/\[\[/.test(s.j)&&(s.j.match(/\[\[/g)||[]).length===1);
   if(!cand.length)return null;const [s]=si!=null&&cand[si]?cand[si]:pick(cand);const ans=s.j.match(/\[\[(.*?)\]\]/)[1];
   const tail=plain(ans).slice(-1);let pool=GMARK.filter(x=>x.g!==g.id&&plain(x.f)!==plain(ans));
   const near=pool.filter(x=>plain(x.f).slice(-1)===tail);
   const ds=[];for(const x of [...shuffle(near),...shuffle(pool)]){if(!ds.some(d=>plain(d)===plain(x.f)))ds.push(x.f);if(ds.length>=3)break}
-  return {id:'g'+g.id,type:'文法 — （　）에 들어갈 말을 고르세요',prompt:`<span class="jp">${ruby(s.j,{blank:true})}</span>`,cls:'sent',opts:shuffle([{h:`<span class="jp">${ruby(ans)}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${ruby(d)}</span>`}))]),ans:`<span class="jp">${ruby(s.j)}</span><br><span class="mute">${esc(s.k)}</span><br><b>${esc(g.t)}</b> : ${esc(g.m)}`,sayAfter:plain(s.j)}}
-function qKanji(k){const ds=sample(KJ.filter(x=>x.c!==k.c),3);return {id:'k'+k.c,type:'한자의 훈음을 고르세요',prompt:`<span class="jp" style="font-size:56px">${k.c}</span>`,opts:shuffle([{h:esc(k.h),ok:1},...ds.map(d=>({h:esc(d.h)}))]),ans:`${k.c} — ${esc(k.h)} <span class="mute">(${k.on.join('・')||'-'} / ${k.kun.join('・')||'-'})</span>`,sayAfter:k.on[0]||k.kun[0]||''}}
+  return {id:'g'+g.id,type:'文法 — （　）에 들어갈 말을 고르세요',prompt:`<span class="jp">${ruby(s.j,{blank:true})}</span>`,cls:'sent',opts:shuffle([{h:`<span class="jp">${ruby(ans)}</span>`,ok:1},...ds.map(d=>({h:`<span class="jp">${ruby(d)}</span>`}))]),ans:`<span class="jp">${ruby(s.j)}</span><br><span class="mute">${esc(s.k)}</span><br><b>${esc(g.t)}</b> : ${esc(g.m)}`,sayAfter:s.j}}
+function qKanji(k){const ds=sample(KJ.filter(x=>x.c!==k.c),3);return {id:'k'+k.c,type:'한자의 훈음을 고르세요',prompt:`<span class="jp" style="font-size:56px">${k.c}</span>`,opts:shuffle([{h:esc(k.h),ok:1},...ds.map(d=>({h:esc(d.h)}))]),ans:`${k.c} — ${esc(k.h)} <span class="mute">(${k.on.join('・')||'-'} / ${k.kun.join('・')||'-'})</span>`,sayAfter:kyomi(k.on[0]||k.kun[0]||'')}}
 const VGEN=[qMeaning,qReverse,qReading,qWriting,qListen];
 function qForId(id){if(id[0]==='v'){const v=V[+id.slice(1)];return pick(VGEN)(v)}if(id[0]==='g'){return qGrammar(G[+id.slice(1)])}if(id[0]==='k'){return qKanji(KJ.find(k=>k.c===id.slice(1)))}}
 
@@ -322,30 +444,38 @@ function runQuiz({title,items,intro=[],hearts=3,timed=0,onDone,mode='lesson',gra
   Q={title,items:[...items],queue:[...items],intro:[...intro],grammarIntro,hearts,maxH:hearts,done:0,total:items.length,correct:0,wrong:0,combo:0,maxCombo:0,xp:0,start:Date.now(),timed,onDone,mode,log:[],retry:new Set()};
   const ov=document.createElement('div');ov.className='ov';ov.id='quiz';document.body.appendChild(ov);document.body.style.overflow='hidden';
   if(timed){Q.timer=setInterval(()=>{const left=Math.max(0,timed-Math.floor((Date.now()-Q.start)/1000));const el=$('#qtimer');if(el)el.textContent=`⏱ ${Math.floor(left/60)}:${String(left%60).padStart(2,'0')}`;if(left<=0){clearInterval(Q.timer);finishQuiz(true)}},500)}
+  Q.pct=0;sfx('start');
   if(grammarIntro)showGrammarIntro();else if(Q.intro.length)showIntro(0);else nextQ();
 }
+function heartsH(lost=-1){return Array.from({length:Q.maxH},(_,i)=>`<span class="h ${i===lost?'lost':''}">${i<Q.hearts||i===lost?'❤️':'🤍'}</span>`).join('')}
+function setBar(){const p=Math.round(Q.done/Q.total*100);Q.pct=p;const b=$('.qhead .bar>i');if(b)b.style.width=p+'%'}
+// 정답 위로 "+12 XP" 가 떠오르는 효과
+function xpFloat(txt,el){if(!S.anim||!el)return;const r=el.getBoundingClientRect();const d=document.createElement('div');d.className='xpf';d.textContent=txt;d.style.left=(r.right-110)+'px';d.style.top=(r.top-6)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1150)}
+// 숫자가 0부터 올라가는 효과
+function countUp(el,to,suf=''){if(!el)return;if(!S.anim||!to){el.firstChild.textContent=to+suf;return}const t0=performance.now(),D=900;
+  const f=now=>{const k=Math.min(1,(now-t0)/D),e=1-Math.pow(1-k,3);el.firstChild.textContent=Math.round(to*e)+suf;if(k<1)requestAnimationFrame(f)};el.firstChild.textContent='0'+suf;setTimeout(()=>requestAnimationFrame(f),250)}
 function closeQuiz(){if(Q&&Q.timer)clearInterval(Q.timer);const o=$('#quiz');if(o)o.remove();$('.fb')?.remove();document.body.style.overflow='';Q=null;try{speechSynthesis.cancel()}catch(e){}render()}
-function qTop(){const pct=Q.st==='intro'?0:Math.round(Q.done/Q.total*100);
-  return `<div class="qhead"><button class="x" onclick="confirmQuit()">✕</button><div class="bar"><i style="width:${pct}%"></i></div>${Q.timed?`<span class="timer" id="qtimer"></span>`:`<span class="hearts">${'❤️'.repeat(Q.hearts)}${'🤍'.repeat(Math.max(0,Q.maxH-Q.hearts))}</span>`}</div>`}
+function qTop(){const pct=Q.pct||0;
+  return `<div class="qhead"><button class="x" onclick="confirmQuit()">✕</button><div class="bar"><i style="width:${pct}%"></i></div>${Q.timed?`<span class="timer" id="qtimer"></span>`:`<span class="hearts">${heartsH()}</span>`}</div>`}
 function confirmQuit(){sheet(`<h2 style="margin-top:0">정말 그만둘까요?</h2><p class="mute">지금 나가면 이번 레슨 진행 상황이 사라져요.</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">계속하기</button><button class="btn red grow" onclick="closeSheet();closeQuiz()">그만두기</button></div>`)}
 function showGrammarIntro(){const g=Q.grammarIntro;$('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">오늘의 문법</div>${grammarBody(g)}<div style="height:90px"></div></div>
   <div class="fb"><div class="in"><button class="btn wide" onclick="Q.grammarIntro=null;Q.intro.length?showIntro(0):nextQ()">이해했어요! 문제 풀기 →</button></div></div>`}
 function showIntro(i){const v=Q.intro[i];if(!v){nextQ();return}
   const ks=[...v.w].map(c=>KJ.find(k=>k.c===c)).filter(Boolean);
   $('#quiz').innerHTML=`<div class="in">${qTop()}<div class="chip">새 단어 ${i+1} / ${Q.intro.length}</div>
-  <div class="intro pop"><div class="w jp">${ruby(v.f)}</div><div class="row" style="justify-content:center;margin-bottom:8px">${spk(v.w)}${spk(v.w,'f','m')}</div>
+  <div class="intro pop"><div class="w jp">${ruby(v.f)}</div><div class="row" style="justify-content:center;margin-bottom:8px">${spk(v.f)}${spk(v.f,'f','m')}</div>
   <div class="k">${esc(v.k)}</div><span class="chip">${v.p}</span>
   ${ks.length?`<div class="card" style="margin-top:18px;text-align:left">${ks.map(k=>`<div class="row" style="margin:4px 0"><span class="jp" style="font-size:28px">${k.c}</span><span class="grow"><b>${esc(k.h)}</b><br><span class="mute jp" style="font-size:13px">音 ${k.on.join('・')||'-'}　訓 ${k.kun.join('・')||'-'}</span></span></div>`).join('')}</div>`:''}
   </div><div style="height:90px"></div></div>
   <div class="fb"><div class="in"><button class="btn wide" onclick="showIntro(${i+1})">${i+1<Q.intro.length?'다음 단어 →':'문제 풀기 →'}</button></div></div>`;
-  setTimeout(()=>speak(v.w),250)}
+  setTimeout(()=>speak(v.f),250)}
 function nextQ(){$('.fb')?.remove();if(!Q)return;if(!Q.queue.length||(!Q.timed&&Q.hearts<=0)){finishQuiz();return}
   Q.st='q';const id=Q.queue.shift();Q.cur=typeof id==='string'?qForId(id):id;if(!Q.cur){Q.done++;nextQ();return}const q=Q.cur;
   const furiOff=q.nofuri;
-  $('#quiz').innerHTML=`<div class="in">${qTop()}<div class="combo">${Q.combo>=3?`🔥 ${Q.combo} 콤보!`:''}</div>
+  $('#quiz').innerHTML=`<div class="in qanim">${qTop()}<div class="combo ${Q.combo>=3?'hot':''}">${Q.combo>=3?`🔥 ${Q.combo} 콤보!`:''}</div>
   <div class="qtype">${q.type}</div>
   <div class="qprompt ${q.cls||''} ${furiOff?'nf':''}">${q.prompt}${q.say?spk(q.say,'sm'):''}</div>
-  <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="n">${i+1}</span><span class="grow">${o.h}</span></button>`).join('')}</div><div style="height:140px"></div></div>
+  <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}" style="--i:${i}"><span class="n">${i+1}</span><span class="grow">${o.h}</span></button>`).join('')}</div><div style="height:140px"></div></div>
   <div class="fb"><div class="in"><button class="btn wide" id="chk" disabled>확인</button></div></div>`;
   if(furiOff)$('.qprompt').querySelectorAll('rt').forEach(r=>r.style.visibility='hidden');
   if(q.listen)setTimeout(()=>speak(q.listen),200);
@@ -354,14 +484,19 @@ function nextQ(){$('.fb')?.remove();if(!Q)return;if(!Q.queue.length||(!Q.timed&&
   Q.keyh=e=>{if(!Q||Q.st!=='q')return;const n=+e.key;if(n>=1&&n<=q.opts.length){document.querySelectorAll('.opt')[n-1].click()}if(e.key==='Enter'&&sel>=0)check(sel)};
 }
 document.addEventListener('keydown',e=>{if(Q&&Q.keyh)Q.keyh(e);if(Q&&Q.st==='fb'&&e.key==='Enter'){$('#cont')?.click()}});
-function check(sel){const q=Q.cur;const ok=!!q.opts[sel].ok;Q.st='fb';beep(ok);
+function check(sel){const q=Q.cur;const ok=!!q.opts[sel].ok;Q.st='fb';sfx(ok?'ok':'ng');
   document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(q.opts[i].ok)b.classList.add('ok');else if(i===sel)b.classList.add('ng')});
   $('.qprompt').querySelectorAll('rt').forEach(r=>r.style.visibility='');
   Q.log.push({q,ok});
   if(ok){Q.correct++;Q.combo++;Q.maxCombo=Math.max(Q.maxCombo,Q.combo);const gain=10+Math.min(10,Math.floor(Q.combo/3)*2);Q.xp+=gain;Q.done++}
-  else{Q.wrong++;Q.combo=0;if(!Q.timed){Q.hearts--;const rk=q.id&&q.id[0]!=='x'?q.id:q;if(!Q.retry.has(rk)){Q.retry.add(rk);Q.queue.push(rk);Q.total++}}Q.done++;$('.opts').classList.add('shake')}
+  else{Q.wrong++;Q.combo=0;if(!Q.timed){Q.hearts--;const rk=q.id&&q.id[0]!=='x'?q.id:q;if(!Q.retry.has(rk)){Q.retry.add(rk);Q.queue.push(rk);Q.total++}}Q.done++}
+  setBar();
+  if(!ok&&!Q.timed){const h=$('.hearts');if(h)h.innerHTML=heartsH(Q.hearts)}
+  const cb=$('.combo');if(cb){cb.className='combo '+(Q.combo>=3?'hot':'');cb.textContent=Q.combo>=3?`🔥 ${Q.combo} 콤보!`:''}
+  if(ok){xpFloat(`+${10+Math.min(10,Math.floor(Q.combo/3)*2)} XP`,document.querySelectorAll('.opt')[sel]);if(Q.combo>=3&&Q.combo%3===0){const c=Q.combo;setTimeout(()=>sfx('combo',c),200)}}
   if(q.id&&q.id[0]!=='x')srsGrade(q.id,ok);
-  if(q.sayAfter&&!ok)speak(q.sayAfter);else if(q.sayAfter&&ok)speak(q.sayAfter);
+  // 효과음과 겹치지 않게 조금 뒤에 읽는다
+  if(q.sayAfter)speak(q.sayAfter,'',S.sfx?420:0);
   const fb=$('.fb');fb.className='fb '+(ok?'ok':'ng');
   fb.innerHTML=`<div class="in"><div class="t">${ok?pick(['정답이에요! 🎉','훌륭해요! ✨','완벽해요! 👏','맞아요! 💯']):'아쉬워요 😢'}</div><div class="d">${ok?'':'정답: '}${q.ans}</div><button class="btn wide ${ok?'':'red'}" id="cont">계속</button></div>`;
   $('#cont').onclick=nextQ;save()}
@@ -376,21 +511,27 @@ function finishQuiz(timeUp){if(!Q)return;if(Q.timer)clearInterval(Q.timer);$('.f
   $('#quiz').innerHTML=`<div class="in"><div class="result pop"><div class="e">${failed?'💔':acc>=90?'🏆':acc>=70?'🎉':'💪'}</div>
   <h1>${failed?'하트를 다 썼어요':timeUp?'시간 종료!':Q.mode==='exam'?'모의고사 완료!':'레슨 완료!'}</h1>
   <p class="mute">${failed?'틀린 문제는 복습 목록에 들어갔어요. 다시 도전해 봐요!':acc===100?'한 문제도 안 틀렸어요! 퍼펙트 보너스 +15 XP':'잘했어요. 틀린 단어는 곧 다시 나와요.'}</p>
-  <div class="stats"><div>${total}<small>획득 XP</small></div><div>${acc}%<small>정답률</small></div><div>${Q.maxCombo}<small>최대 콤보</small></div></div>
-  ${after>before?`<div class="card" style="border-color:var(--y)"><b>🏅 레벨 업! Lv.${after}</b></div>`:''}
+  <div class="stats"><div id="rs1">${total}<small>획득 XP</small></div><div id="rs2">${acc}%<small>정답률</small></div><div id="rs3">${Q.maxCombo}<small>최대 콤보</small></div></div>
+  ${after>before?`<div class="card lvup" style="border-color:var(--y)"><b>🏅 레벨 업! Lv.${after}</b></div>`:''}
   ${goalHit?`<div class="card" style="border-color:var(--g)"><b>🎯 오늘의 목표 달성!</b></div>`:''}
   ${Q.mode==='exam'?examReview(Q.log):''}
   <button class="btn wide" onclick="closeQuiz()">계속</button></div></div>`;
+  countUp($('#rs1'),total);countUp($('#rs2'),acc,'%');countUp($('#rs3'),Q.maxCombo);
+  sfx(failed?'fail':'win');
+  if(!failed&&after>before)setTimeout(()=>sfx('level'),1000);else if(!failed&&goalHit)setTimeout(()=>sfx('goal'),1000);
   if(!failed)confetti();
 }
 function examReview(log){return `<div class="card" style="text-align:left"><b>문제 돌아보기</b>${log.map((l,i)=>`<div class="ex"><div>${l.ok?'⭕':'❌'} <span class="mute">${i+1}. ${l.q.type}</span></div><div class="jp" style="line-height:2">${l.q.ans}</div></div>`).join('')}</div>`}
 
 /* ---------------- sheets ---------------- */
-function sheet(h){closeSheet();const d=document.createElement('div');d.className='sheet';d.id='sheet';d.innerHTML=`<div>${h}</div>`;d.onclick=e=>{if(e.target===d)closeSheet()};document.body.appendChild(d)}
+function sheet(h){if(!$('#sheet'))sfx('sheet');closeSheet();const d=document.createElement('div');d.className='sheet';d.id='sheet';d.innerHTML=`<div>${h}</div>`;d.onclick=e=>{if(e.target===d)closeSheet()};document.body.appendChild(d)}
 function closeSheet(){$('#sheet')?.remove()}
 
 /* ---------------- header ---------------- */
-function hdr(){$('#nStreak').textContent=liveStreak();$('#nXP').textContent=S.xp;$('#nLv').textContent=level(S.xp);document.body.classList.toggle('nofuri',!S.furi)}
+const HPREV={};
+function hdr(){const vals={nStreak:liveStreak(),nXP:S.xp,nLv:level(S.xp)};
+  for(const [id,v] of Object.entries(vals)){const el=$('#'+id);if(HPREV[id]!=null&&v>HPREV[id]){const b=el.parentElement;b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}el.textContent=v;HPREV[id]=v}
+  document.body.classList.toggle('nofuri',!S.furi);document.body.classList.toggle('anim',!!S.anim)}
 $('#sStreak').onclick=()=>{const days=[];for(let i=27;i>=0;i--){const d=addDays(today(),-i);days.push([d,S.days[d]||0])}
   sheet(`<h2 style="margin-top:0">🔥 ${liveStreak()}일 연속 학습 중</h2><p class="mute">최고 기록 ${S.best}일 · 스트릭 보호권 🧊 ${S.freezes}개 (7일마다 1개, 하루 빠져도 스트릭 유지)</p>
   <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:14px 0">${days.map(([d,x])=>`<div title="${d}: ${x}XP" style="aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:${x>=S.goal?'var(--o)':x>0?'#ffd08a':'var(--line)'};color:${x?'#fff':'var(--soft)'}">${+d.slice(8)}</div>`).join('')}</div>
@@ -405,12 +546,18 @@ function settings(){loadVoices();sheet(`<h2 style="margin-top:0">⚙️ 설정</
   <label>음성 속도 <span><input type="range" id="stR" min=".5" max="1.3" step=".1" value="${S.rate}"> <b id="stRv">${S.rate}</b></span></label>
   <label>기본 음성<select id="stV" style="max-width:55%"><option value="auto">자동</option>${VOICES.map(v=>`<option ${S.voice===v.name?'selected':''} value="${esc(v.name)}">${esc(v.name)}</option>`).join('')}</select></label>
   <label>효과음<input type="checkbox" class="tog" id="stS" ${S.sfx?'checked':''}></label>
-  </div>${VOICES.length?'':'<p class="mute" style="font-size:13px">⚠️ 일본어 음성이 아직 감지되지 않았어요. OS 설정에서 일본어 음성을 설치하면 더 자연스럽게 들려요.</p>'}
-  <div class="row" style="margin-top:14px"><button class="btn ghost grow" onclick="speak('こんにちは。毎日少しずつ頑張りましょう。')">🔊 음성 테스트</button><button class="btn grow" onclick="closeSheet();render()">완료</button></div>
+  <label>효과음 크기 <span><input type="range" id="stVol" min=".1" max="1" step=".1" value="${S.vol}"> <b id="stVolv">${Math.round(S.vol*100)}</b></span></label>
+  <label>애니메이션<input type="checkbox" class="tog" id="stA" ${S.anim?'checked':''}></label>
+  <label>계정 · 기기 동기화<button class="linkbtn" onclick="acctSheet()">${CS.user?`☁️ ${esc(CS.id)}`:'로그인하기'} ›</button></label>
+  </div>
+  ${VOICES.length&&!VOICES.some(v=>vscore(v)>=30)?'<p class="mute" style="font-size:13px">💡 음성이 작거나 기계음처럼 들리면 크롬의 "Google 日本語" 또는 엣지의 "Nanami Online (Natural)" 음성을 고르면 훨씬 또렷해요.</p>':''}${VOICES.length?'':'<p class="mute" style="font-size:13px">⚠️ 일본어 음성이 아직 감지되지 않았어요. OS 설정에서 일본어 음성을 설치하면 더 자연스럽게 들려요.</p>'}
+  <div class="row" style="margin-top:14px"><button class="btn ghost grow" onclick="speak('こんにちは。毎日{まいにち}少{すこ}しずつ頑張{がんば}りましょう。')">🔊 음성 테스트</button><button class="btn grow" onclick="closeSheet();render()">완료</button></div>
   <p style="margin-top:18px"><button class="mute" style="font-size:12px;text-decoration:underline" onclick="resetAll()">학습 기록 초기화</button></p>`);
   $('#stF').onchange=e=>{S.furi=e.target.checked;save();hdr()};$('#stG').onchange=e=>{S.goal=+e.target.value;save()};$('#stN').onchange=e=>{S.perDay=+e.target.value;save()};
-  $('#stR').oninput=e=>{S.rate=+e.target.value;$('#stRv').textContent=S.rate;save()};$('#stV').onchange=e=>{S.voice=e.target.value;save()};$('#stS').onchange=e=>{S.sfx=e.target.checked;save()}}
-function resetAll(){sheet(`<h2 style="margin-top:0">정말 초기화할까요?</h2><p class="mute">XP, 스트릭, 단어 복습 기록이 모두 지워져요.</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">취소</button><button class="btn red grow" onclick="S={...DEF};save();closeSheet();render()">초기화</button></div>`)}
+  $('#stR').oninput=e=>{S.rate=+e.target.value;$('#stRv').textContent=S.rate;save()};$('#stV').onchange=e=>{S.voice=e.target.value;save()};$('#stS').onchange=e=>{S.sfx=e.target.checked;save();sfx('ok')};
+  $('#stVol').oninput=e=>{S.vol=+e.target.value;$('#stVolv').textContent=Math.round(S.vol*100);save()};$('#stVol').onchange=()=>sfx('ok');
+  $('#stA').onchange=e=>{S.anim=e.target.checked;save();hdr()}}
+function resetAll(){sheet(`<h2 style="margin-top:0">정말 초기화할까요?</h2><p class="mute">XP, 스트릭, 단어 복습 기록이 모두 지워져요.${CS.user?' 로그인한 다른 기기의 기록도 같이 지워져요.':''}</p><div class="row"><button class="btn ghost grow" onclick="closeSheet()">취소</button><button class="btn red grow" onclick="S={...DEF,_ep:(S._ep||0)+1,_uid:S._uid};save();closeSheet();render()">초기화</button></div>`)}
 
 /* ---------------- badges ---------------- */
 const BADGES=[
@@ -419,14 +566,16 @@ const BADGES=[
   ['g10','📘','문법 10개',()=>Object.keys(S.gdone).length>=10],['g46','📙','문법 절반',()=>Object.keys(S.gdone).length>=46],['gall','📕','문법 정복',()=>Object.keys(S.gdone).length>=G.length],
   ['k100','漢','한자 100자',()=>Object.keys(S.kknown).length>=100],['perf','💎','퍼펙트 5회',()=>S.perfect>=5],['xp1k','⚡','1000 XP',()=>S.xp>=1000],['xp5k','🌟','5000 XP',()=>S.xp>=5000],
   ['kana','あ','가나 마스터',()=>kanaMastery()>=.9],['exam','🎯','모의고사 합격',()=>S.exams.some(e=>e.acc>=60)],['exam9','🏆','모의고사 90점',()=>S.exams.some(e=>e.acc>=90)]];
-function checkBadges(){for(const [id,e,n,f] of BADGES){if(!S.badges[id]&&f()){S.badges[id]=today();save();setTimeout(()=>{toast(`${e} 업적 달성: ${n}`);confetti()},600)}}}
+function checkBadges(){for(const [id,e,n,f] of BADGES){if(!S.badges[id]&&f()){S.badges[id]=today();save();setTimeout(()=>{toast(`${e} 업적 달성: ${n}`);confetti();sfx('badge')},600)}}}
 function badgeGrid(){return `<div class="badges">${BADGES.map(([id,e,n])=>`<div class="badge ${S.badges[id]?'':'off'}"><span class="e">${e}</span>${n}</div>`).join('')}</div>`}
 
 /* ---------------- views ---------------- */
 let VIEW='home';
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{VIEW=b.dataset.v;location.hash=VIEW==='home'?'':VIEW;render();scrollTo(0,0)});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==VIEW&&VIEWS[h]){VIEW=h;render()}});
-function render(){hdr();document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));$('#app').innerHTML='';VIEWS[VIEW]()}
+function render(){hdr();document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===VIEW));const app=$('#app');app.classList.remove('enter');app.innerHTML='';VIEWS[VIEW]();
+  // 화면 들어올 때 위에서부터 차례로 올라오는 효과
+  [...app.children].slice(0,14).forEach((c,i)=>c.style.setProperty('--i',i));app.querySelectorAll('.node').forEach((n,i)=>n.style.setProperty('--n',i));void app.offsetWidth;app.classList.add('enter')}
 const VIEWS={home,grammar:grammarView,vocab:vocabView,kanji:kanjiView,exam:examView,kana:kanaView};
 
 function home(){const due=dueIds();const nw=newWords(S.perDay);const ng=nextGrammar();const dx=dayXP();const st=liveStreak();
@@ -450,7 +599,7 @@ function home(){const due=dueIds();const nw=newWords(S.perDay);const ng=nextGram
     <div class="mini"><div class="t">가나 숙련도</div><div class="big">${Math.round(kanaMastery()*100)}%</div><div class="bar" style="height:8px;margin-top:6px"><i style="width:${kanaMastery()*100}%;background:var(--p)"></i></div></div>
   </div>
   <h2>🏅 업적</h2>${badgeGrid()}
-  <p class="mute" style="font-size:12px;margin-top:22px;text-align:center">학습 기록은 이 브라우저에만 저장돼요.</p>`;
+  <p class="mute" style="font-size:12px;margin-top:22px;text-align:center">${CS.user?`☁️ <b>${esc(CS.id)}</b> 계정에 자동 저장되고 다른 기기와 동기화돼요.`:`학습 기록은 이 브라우저에만 저장돼요. <button class="linkbtn" onclick="acctSheet()">로그인</button>하면 컴퓨터·핸드폰에서 이어서 할 수 있어요.`}</p>`;
   document.querySelectorAll('.node').forEach(b=>b.onclick=()=>{const u=units[+b.dataset.u];if(!u.ok){toast(u.k==='rev'?'지금 복습할 단어가 없어요. 새 단어를 먼저 배워요!':'모두 완료했어요!');return}u.go()})}
 
 function startVocabLesson(){const nw=newWords(S.perDay);if(!nw.length){toast('모든 단어를 배웠어요!');return}
@@ -497,7 +646,7 @@ function vocabView(){const POS=['전체','명사','동사','い형용사','な�
   <div class="list" id="vl"></div><div style="text-align:center;margin-top:12px"><button class="btn ghost" id="vmore" style="display:none">더 보기</button></div>`;
   const filt=()=>{const q=vf.q.trim().toLowerCase();return VORD.filter(v=>(vf.pos==='전체'||v.p===vf.pos)&&(!q||v.w.includes(q)||v.r.includes(q)||v.k.toLowerCase().includes(q))&&(vf.st==='전체'||(vf.st==='학습함'?S.srs['v'+v.i]:vf.st==='아직'?!S.srs['v'+v.i]:S.star[v.i])))};
   const draw=()=>{const L=filt();$('#vc').textContent=`${L.length}개`;
-    $('#vl').innerHTML=L.length?L.slice(0,vf.lim).map(v=>`<div class="vitem"><button class="star ${S.star[v.i]?'on':''}" data-s="${v.i}">★</button><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)} <span class="chip" style="font-size:10px;padding:1px 7px">${v.p}</span> ${S.srs['v'+v.i]?'<span style="color:var(--g);font-size:12px;font-weight:800">✓</span>':''}</div></div>${spk(v.w)}</div>`).join(''):'<div class="empty">조건에 맞는 단어가 없어요</div>';
+    $('#vl').innerHTML=L.length?L.slice(0,vf.lim).map(v=>`<div class="vitem"><button class="star ${S.star[v.i]?'on':''}" data-s="${v.i}">★</button><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)} <span class="chip" style="font-size:10px;padding:1px 7px">${v.p}</span> ${S.srs['v'+v.i]?'<span style="color:var(--g);font-size:12px;font-weight:800">✓</span>':''}</div></div>${spk(v.f)}</div>`).join(''):'<div class="empty">조건에 맞는 단어가 없어요</div>';
     $('#vmore').style.display=L.length>vf.lim?'':'none';
     document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const i=b.dataset.s;if(S.star[i])delete S.star[i];else S.star[i]=1;b.classList.toggle('on');save()})};
   $('#vs').oninput=e=>{vf.q=e.target.value;vf.lim=80;draw()};
@@ -506,15 +655,16 @@ function vocabView(){const POS=['전체','명사','동사','い형용사','な�
   $('#vmore').onclick=()=>{vf.lim+=120;draw()};
   $('#vflash').onclick=()=>{const L=filt();if(!L.length)return;flash(shuffle(L).slice(0,30))};draw()}
 function flash(list){let i=0,flip=false;const ov=document.createElement('div');ov.className='ov';ov.id='fl';document.body.appendChild(ov);document.body.style.overflow='hidden';
-  const draw=()=>{const v=list[i];ov.innerHTML=`<div class="in"><div class="qhead"><button class="x" id="flx">✕</button><div class="bar"><i style="width:${(i)/list.length*100}%"></i></div><span class="mute">${i+1}/${list.length}</span></div>
+  const draw=(fx)=>{const v=list[i];ov.innerHTML=`<div class="in"><div class="qhead"><button class="x" id="flx">✕</button><div class="bar"><i style="width:${(i)/list.length*100}%"></i></div><span class="mute">${i+1}/${list.length}</span></div>
     <button class="card" id="flc" style="width:100%;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
     <div class="jp" style="font-size:48px;line-height:2">${flip?ruby(v.f):esc(v.w)}</div>${flip?`<div style="font-size:22px;font-weight:800">${esc(v.k)}</div><span class="chip">${v.p}</span>`:'<div class="mute">탭해서 뜻 보기</div>'}</button>
-    <div class="row" style="justify-content:center;margin:6px 0 16px">${spk(v.w)}${spk(v.w,'f','m')}</div>
+    <div class="row" style="justify-content:center;margin:6px 0 16px">${spk(v.f)}${spk(v.f,'f','m')}</div>
     <div class="row"><button class="btn red grow" id="fln">😵 몰라요</button><button class="btn grow" id="fly">😎 알아요</button></div></div>`;
+    if(fx)$('#flc').classList.add(fx);
     $('#flx').onclick=()=>{ov.remove();document.body.style.overflow='';render()};
-    $('#flc').onclick=()=>{flip=!flip;draw();if(flip)speak(v.w)};
-    $('#fly').onclick=()=>{srsGrade('v'+v.i,true);addXP(2);nx()};$('#fln').onclick=()=>{srsGrade('v'+v.i,false);list.push(v);nx()}};
-  const nx=()=>{i++;flip=false;save();if(i>=list.length){ov.innerHTML=`<div class="in"><div class="result pop"><div class="e">🃏</div><h1>플래시카드 완료!</h1><button class="btn wide" onclick="$('#fl').remove();document.body.style.overflow='';render()">닫기</button></div></div>`;confetti();checkBadges()}else draw()};draw()}
+    $('#flc').onclick=()=>{flip=!flip;draw('flip');sfx('flip');if(flip)speak(v.f)};
+    $('#fly').onclick=()=>{sfx('know');srsGrade('v'+v.i,true);addXP(2);nx()};$('#fln').onclick=()=>{sfx('dunno');srsGrade('v'+v.i,false);list.push(v);nx()}};
+  const nx=()=>{i++;flip=false;save();if(i>=list.length){ov.innerHTML=`<div class="in"><div class="result pop"><div class="e">🃏</div><h1>플래시카드 완료!</h1><button class="btn wide" onclick="$('#fl').remove();document.body.style.overflow='';render()">닫기</button></div></div>`;confetti();sfx('win');checkBadges()}else draw('next')};draw()}
 
 /* kanji */
 let kq='';
@@ -527,8 +677,8 @@ function kanjiView(){$('#app').innerHTML=`<h1>漢 N3 한자 <span class="mute" s
   $('#ks').oninput=e=>{kq=e.target.value;draw()};$('#kquiz').onclick=startKanjiLesson;draw()}
 function openKanji(k){const ex=k.ex.map(i=>V[i]);
   sheet(`<div class="row"><div class="jp" style="font-size:84px;line-height:1.1;width:110px;text-align:center;border:2px solid var(--line);border-radius:18px">${k.c}</div><div class="grow"><div style="font-size:24px;font-weight:900">${esc(k.h)}</div><div class="mute">${k.s}획</div>
-  <div class="jp" style="margin-top:6px"><b>음독</b> ${k.on.map(r=>`<span class="chip jp" style="font-size:14px">${r}</span>`).join(' ')||'-'}</div><div class="jp" style="margin-top:6px"><b>훈독</b> ${k.kun.map(r=>`<span class="chip jp" style="font-size:14px">${r}</span>`).join(' ')||'-'}</div></div></div>
-  <div class="sec" style="margin-top:18px">N3 단어</div><div class="list">${ex.map(v=>`<div class="vitem"><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)}</div></div>${spk(v.w)}</div>`).join('')||'<div class="empty">N3 단어 목록에 없어요</div>'}</div>
+  <div class="jp" style="margin-top:6px"><b>음독</b> ${k.on.map(r=>`<button class="chip jp" style="font-size:14px" data-say="${esc(kyomi(r))}">${r} 🔊</button>`).join(' ')||'-'}</div><div class="jp" style="margin-top:6px"><b>훈독</b> ${k.kun.map(r=>`<button class="chip jp" style="font-size:14px" data-say="${esc(kyomi(r))}">${r} 🔊</button>`).join(' ')||'-'}</div></div></div>
+  <div class="sec" style="margin-top:18px">N3 단어</div><div class="list">${ex.map(v=>`<div class="vitem"><div class="grow"><div class="w jp">${ruby(v.f)}</div><div class="k">${esc(v.k)}</div></div>${spk(v.f)}</div>`).join('')||'<div class="empty">N3 단어 목록에 없어요</div>'}</div>
   <div style="height:12px"></div><button class="btn wide" onclick="closeSheet()">닫기</button>`)}
 
 /* exam */
@@ -588,7 +738,115 @@ function kanaView(){const sc=ks2.s,t=ks2.t;
   $('#kq1').onclick=()=>runQuiz({items:mk(1),hearts:5,onDone:done});
   $('#kq2').onclick=()=>runQuiz({items:mk(2),hearts:5,onDone:done});
   $('#kq3').onclick=()=>runQuiz({items:mk(3),hearts:5,onDone:done});
-  $('#kq4').onclick=()=>{const pool=V.filter(v=>!hasK(v.w)&&v.w.length>=3);const items=sample(pool,8).map(v=>{const ds=distract(v,3,'k');return {id:'x',type:'읽고 뜻을 고르세요',prompt:`<span class="jp">${esc(v.w)}</span>`,say:v.w,opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${esc(v.w)} — ${esc(v.k)}`,sayAfter:v.w}});runQuiz({items,hearts:5})}}
+  $('#kq4').onclick=()=>{const pool=V.filter(v=>!hasK(v.w)&&v.w.length>=3);const items=sample(pool,8).map(v=>{const ds=distract(v,3,'k');return {id:'x',type:'읽고 뜻을 고르세요',prompt:`<span class="jp">${esc(v.w)}</span>`,say:v.f,opts:shuffle([{h:esc(v.k),ok:1},...ds.map(d=>({h:esc(d.k)}))]),ans:`${esc(v.w)} — ${esc(v.k)}`,sayAfter:v.f}});runQuiz({items,hearts:5})}}
+
+/* ---------------- 계정 · 기기 동기화 (Firebase) ----------------
+   아이디/비밀번호 → Firebase Auth(이메일 로그인, 아이디@maeil-n3.invalid 로 바꿔서 씀)
+   학습 기록 S 전체 → Firestore users/{uid} 문서 하나 ({data: JSON 문자열, ut, v})
+   두 기기에서 따로 공부한 기록은 mergeS()로 합친다. 설정은 나중에 바꾼 쪽이 이긴다. */
+const FBCFG=/*FIREBASE*/null;
+const FBSDK='https://www.gstatic.com/firebasejs/13.2.0/';
+const AUTHFLAG='maeil-n3-auth';               // 로그인한 적 있는 기기만 SDK를 불러오기 위한 표시
+const LOCAL_ONLY=['voice'];                    // 기기마다 다른 값(음성 이름)은 동기화하지 않는다
+const CS={user:null,id:'',status:'off',last:0,err:''};  // status: off|syncing|ok|offline|error
+let FB=null,fbP=null,unsub=null,pushT=null;
+const ID_RE=/^[a-z0-9_]{3,20}$/;
+const idMail=id=>id+'@maeil-n3.invalid';
+function fbInit(){if(!FBCFG)return Promise.reject(new Error('nocfg'));if(fbP)return fbP;
+  fbP=Promise.all(['app','auth','firestore'].map(m=>import(FBSDK+'firebase-'+m+'.js'))).then(([app,A,F])=>{
+    const a=app.initializeApp(FBCFG);FB={auth:A.getAuth(a),db:F.getFirestore(a),A,F};
+    A.onAuthStateChanged(FB.auth,onUser);return FB}).catch(e=>{fbP=null;throw e});
+  return fbP}
+// 키 순서와 상관없이 같은 내용이면 같은 문자열
+function stable(o){if(Array.isArray(o))return '['+o.map(stable).join(',')+']';if(o&&typeof o==='object')return '{'+Object.keys(o).filter(k=>o[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+stable(o[k])).join(',')+'}';return JSON.stringify(o)}
+const shared=o=>{const r={...o};LOCAL_ONLY.forEach(k=>delete r[k]);return r};
+// 두 기록 합치기. 순서를 바꿔 넣어도 결과가 같아야 기기끼리 핑퐁하지 않는다.
+function mergeS(a,b){const L=a;
+  const ea=a._ep||0,eb=b._ep||0;
+  if(ea!==eb){const w=ea>eb?a:b;return {...DEF,...w,voice:L.voice}}        // 한쪽에서 초기화했으면 그쪽을 따른다
+  const ua=a._ut||0,ub=b._ut||0;const an=ua!==ub?ua>ub:stable(shared(a))>=stable(shared(b));
+  const n=an?a:b,o=an?b:a;                                                 // n: 더 최근에 바뀐 쪽
+  const r={...DEF,...o,...n};
+  const maxMap=(x={},y={})=>{const m={...x};for(const k in y)m[k]=Math.max(m[k]||0,y[k]||0);return m};
+  r.days=maxMap(a.days,b.days);r.kana=maxMap(a.kana,b.kana);
+  const better=(p,q)=>{const pn=p.n||0,qn=q.n||0;if(pn!==qn)return pn>qn?p:q;if(p.d!==q.d)return p.d>q.d?p:q;return stable(p)>=stable(q)?p:q};
+  r.srs={...(a.srs||{})};for(const k in (b.srs||{}))r.srs[k]=r.srs[k]?better(r.srs[k],b.srs[k]):b.srs[k];
+  r.gdone={...o.gdone,...n.gdone};r.kknown={...o.kknown,...n.kknown};r.badges={...o.badges,...n.badges};
+  r.star={...(n.star||{})};
+  const ex=new Map();[...(a.exams||[]),...(b.exams||[])].forEach(e=>ex.set(stable(e),e));
+  r.exams=[...ex.entries()].sort((x,y)=>(x[1].d||'')<(y[1].d||'')?-1:(x[1].d||'')>(y[1].d||'')?1:x[0]<y[0]?-1:x[0]>y[0]?1:0).map(x=>x[1]);
+  r.xp=Math.max(a.xp||0,b.xp||0,Object.values(r.days).reduce((s,x)=>s+x,0));
+  for(const k of ['lessons','perfect','best'])r[k]=Math.max(a[k]||0,b[k]||0);
+  if((a.last||'')!==(b.last||'')){const w=(a.last||'')>(b.last||'')?a:b;r.last=w.last;r.streak=w.streak;r.freezes=w.freezes}
+  else{r.streak=Math.max(a.streak||0,b.streak||0);r.freezes=Math.min(a.freezes||0,b.freezes||0)}
+  r.best=Math.max(r.best,r.streak);r._ut=Math.max(ua,ub);r.voice=L.voice;
+  return r}
+function syncUI(){const i=$('#iAcc');if(i){i.className=CS.status==='syncing'?'spin':'';i.textContent=!CS.user?'👤':CS.status==='syncing'?'🔄':CS.status==='ok'?'☁️':'⚠️'}
+  const st=$('#acSt');if(st)st.innerHTML=syncLine()}
+function syncLine(){const t=CS.last?new Date(CS.last).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'';
+  return `<span class="syncdot ${CS.status}"></span>${CS.status==='syncing'?'동기화 중…':CS.status==='ok'?`동기화됨${t?' · '+t:''}`:CS.status==='offline'?'오프라인 — 연결되면 자동으로 올라가요':CS.status==='error'?`동기화 오류 (${esc(CS.err)}) — 잠시 후 다시 시도해요`:''}`}
+// 다른 기기에서 바뀐 기록이 들어왔을 때 화면 갱신 (문제 푸는 중이면 화면은 그대로 두고 상단 숫자만)
+function refreshUI(){if(Q||$('#fl')||$('#gd'))hdr();else if($('#sheet'))hdr();else render()}
+function applyRemote(d,first){const uid=CS.user.uid;let R=null;if(d&&typeof d.data==='string'){try{R=JSON.parse(d.data)}catch(e){}}
+  let M;
+  if(!R)M={...S};
+  else M=mergeS(S,R);
+  // 이 기기의 기록이 다른 계정에 연결돼 있던 거면(이미 그 계정에 올라가 있음) 섞지 않고 이 계정 기록으로 바꾼다
+  if(first&&S._uid&&S._uid!==uid)M={...DEF,...(R||{}),voice:S.voice};
+  M._uid=uid;
+  const changed=stable(M)!==stable(S);S=M;saveLocal();if(changed)refreshUI();
+  if(!R||stable(shared(M))!==stable(shared(R)))push();else{CS.status='ok';CS.last=Date.now();syncUI()}}
+async function onUser(u){if(unsub){unsub();unsub=null}clearTimeout(pushT);
+  CS.user=u;CS.id=u?u.email.split('@')[0]:'';
+  if($('#sheet .acc')||$('#acSt'))acctSheet();   // 열려 있는 계정 창을 새 상태로
+  if(!u){CS.status='off';syncUI();refreshUI();return}
+  try{localStorage.setItem(AUTHFLAG,'1')}catch(e){}
+  CS.status='syncing';syncUI();
+  const {F}=FB,ref=F.doc(FB.db,'users',u.uid);let first=true;
+  unsub=F.onSnapshot(ref,s=>{if(s.metadata.hasPendingWrites)return;if(!CS.user||CS.user.uid!==u.uid)return;applyRemote(s.exists()?s.data():null,first);first=false},
+    e=>{CS.status=navigator.onLine?'error':'offline';CS.err=e.code||'';syncUI()})}
+function queuePush(){if(!CS.user)return;CS.status='syncing';syncUI();clearTimeout(pushT);pushT=setTimeout(push,1500)}
+async function push(){clearTimeout(pushT);pushT=null;if(!CS.user||!FB)return;const {F}=FB,u=CS.user;CS.status='syncing';syncUI();
+  try{await F.setDoc(F.doc(FB.db,'users',u.uid),{data:JSON.stringify(shared(S)),ut:S._ut||Date.now(),v:1});if(CS.user!==u)return;CS.status='ok';CS.last=Date.now()}
+  catch(e){CS.status=navigator.onLine?'error':'offline';CS.err=e.code||e.message||''}syncUI()}
+// 탭을 닫거나 다른 앱으로 갈 때 대기 중인 저장을 바로 올린다
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&pushT)push()});
+window.addEventListener('online',()=>{if(CS.user)push()});
+const AUTHERR={'auth/email-already-in-use':'이미 있는 아이디예요. 로그인을 눌러 주세요.','auth/invalid-credential':'아이디 또는 비밀번호가 맞지 않아요.','auth/wrong-password':'아이디 또는 비밀번호가 맞지 않아요.','auth/user-not-found':'아이디 또는 비밀번호가 맞지 않아요.','auth/invalid-login-credentials':'아이디 또는 비밀번호가 맞지 않아요.','auth/weak-password':'비밀번호는 6자 이상이어야 해요.','auth/too-many-requests':'시도가 너무 많아요. 잠시 후 다시 해 주세요.','auth/network-request-failed':'인터넷 연결을 확인해 주세요.','auth/invalid-email':'아이디는 영문 소문자·숫자·_ 3~20자예요.','auth/operation-not-allowed':'서버에서 아이디 로그인이 아직 켜져 있지 않아요.'};
+async function acctSubmit(mode){const m=$('#acMsg'),id=$('#acId').value.trim().toLowerCase(),pw=$('#acPw').value;
+  const say=(t,c='err')=>{m.className='acmsg '+c;m.textContent=t};
+  if(!ID_RE.test(id))return say('아이디는 영문 소문자·숫자·_ 3~20자로 해 주세요.');
+  if(pw.length<6)return say('비밀번호는 6자 이상이어야 해요.');
+  if(mode==='new'&&pw!==$('#acPw2').value)return say('비밀번호 확인이 달라요.');
+  document.querySelectorAll('.acc button').forEach(b=>b.disabled=true);say('잠시만요…','ok');
+  try{const {A,auth}=await fbInit();
+    if(mode==='new')await A.createUserWithEmailAndPassword(auth,idMail(id),pw);else await A.signInWithEmailAndPassword(auth,idMail(id),pw);
+    sfx('win');toast(mode==='new'?`🎉 ${id} 계정을 만들었어요`:`☁️ ${id} 로 로그인했어요`)}
+  catch(e){say(e.message==='nocfg'?'동기화 서버가 설정되지 않았어요.':AUTHERR[e.code]||('로그인하지 못했어요 ('+(e.code||e.message)+')'));sfx('ng');document.querySelectorAll('.acc button').forEach(b=>b.disabled=false)}}
+async function acctLogout(){if(pushT)await push();try{localStorage.removeItem(AUTHFLAG)}catch(e){}await FB.A.signOut(FB.auth);toast('로그아웃했어요. 이 기기의 기록은 그대로 남아 있어요.')}
+function acctSheet(mode='login'){
+  if(!FBCFG){sheet(`<h2 style="margin-top:0">☁️ 계정 · 동기화</h2><p class="mute">이 사이트에는 아직 동기화 서버가 연결되지 않았어요.</p><button class="btn wide" onclick="closeSheet()">닫기</button>`);return}
+  if(CS.user){sheet(`<h2 style="margin-top:0">☁️ ${esc(CS.id)}</h2>
+    <p id="acSt" style="font-weight:700">${syncLine()}</p>
+    <p class="mute" style="font-size:14px">컴퓨터·핸드폰 어디서든 같은 아이디로 로그인하면 XP, 스트릭, 단어 복습 기록이 그대로 이어져요. 공부할 때마다 자동으로 저장돼요.</p>
+    <div class="row"><button class="btn ghost grow" onclick="push()">🔄 지금 동기화</button><button class="btn red grow" onclick="acctLogout()">로그아웃</button></div>
+    <div style="height:10px"></div><button class="btn wide" onclick="closeSheet()">닫기</button>`);return}
+  const isNew=mode==='new';
+  sheet(`<h2 style="margin-top:0">${isNew?'🆕 새 계정 만들기':'☁️ 로그인'}</h2>
+    <p class="mute" style="font-size:14px;margin-top:-4px">아이디와 비밀번호만 있으면 컴퓨터·핸드폰에서 같은 기록으로 이어서 공부할 수 있어요.${isNew?' 지금 이 기기의 기록이 새 계정에 그대로 올라가요.':' 이 기기의 기록은 계정 기록과 합쳐져요.'}</p>
+    <form class="acc" onsubmit="event.preventDefault();acctSubmit('${isNew?'new':'login'}')">
+    <input type="text" id="acId" placeholder="아이디 (영문 소문자·숫자 3~20자)" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="20">
+    <input type="password" id="acPw" placeholder="비밀번호 (6자 이상)" autocomplete="${isNew?'new-password':'current-password'}">
+    ${isNew?'<input type="password" id="acPw2" placeholder="비밀번호 확인" autocomplete="new-password">':''}
+    <div class="acmsg" id="acMsg"></div>
+    <button class="btn wide ${isNew?'':'blue'}" type="submit">${isNew?'계정 만들기':'로그인'}</button>
+    <div style="text-align:center;margin-top:14px;font-size:14px">${isNew?'이미 계정이 있나요? <button type="button" class="linkbtn" onclick="acctSheet(\'login\')">로그인</button>':'처음이세요? <button type="button" class="linkbtn" onclick="acctSheet(\'new\')">새 계정 만들기</button>'}</div>
+    </form>
+    <p class="mute" style="font-size:12px;margin-top:16px">⚠️ 이메일을 받지 않기 때문에 비밀번호를 잊으면 찾을 수 없어요. 꼭 기억해 두세요.</p>`);
+  setTimeout(()=>$('#acId')?.focus(),300)}
+$('#sAcc').onclick=()=>acctSheet();
+// 로그인한 적 있는 기기면 시작할 때 자동으로 연결
+try{if(FBCFG&&localStorage.getItem(AUTHFLAG))fbInit().catch(()=>{CS.status='offline';syncUI()})}catch(e){}
 
 /* boot */
 (function(){const h=location.hash.slice(1);if(VIEWS[h])VIEW=h;render();checkBadges()})();

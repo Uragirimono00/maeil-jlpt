@@ -2,6 +2,7 @@
 
 JLPT N3 일본어를 매일 조금씩 공부하는 개인 학습 사이트.
 모든 한자에 후리가나, 모든 일본어에 TTS, 듀오링고식 게임 요소(스트릭·XP·하트·콤보·레벨·업적)가 들어 있다.
+효과음(Web Audio 합성)과 애니메이션이 있고, 아이디·비밀번호로 로그인하면 기기끼리 학습 기록이 동기화된다.
 
 ## 빠르게 시작
 
@@ -51,9 +52,23 @@ S: 薬の[[おかげで]]、熱が下がった。|약 덕분에 열이 내렸다
 - **GitHub Pages**: 저장소 Settings → Pages → Source를 "GitHub Actions"로 설정하고 main에 push.
 - **Netlify / Vercel / Cloudflare Pages**: Build command `npm run build`, Output directory `dist`.
 
-## 저장 방식
+## 저장 방식 · 기기 동기화
 
-학습 기록은 브라우저 `localStorage`(키 `maeil-n3-v1`)에 저장된다. 기기 간 동기화는 아직 없다.
+학습 기록은 브라우저 `localStorage`(키 `maeil-n3-v1`)에 저장된다.
+로그인하면 같은 기록이 Firebase Firestore의 `users/{uid}` 문서에도 저장돼 다른 기기와 실시간으로 맞춰진다.
+
+- 아이디는 내부적으로 `아이디@maeil-n3.invalid` 이메일로 Firebase Auth에 가입된다(메일은 보내지 않음 → 비밀번호 찾기 없음).
+- 두 기기에서 따로 공부한 기록은 `mergeS()`가 합친다: 날짜별 XP는 큰 값, 단어 복습은 더 많이 푼 쪽,
+  업적·문법·한자는 합집합, 설정과 즐겨찾기는 나중에 바꾼 쪽. 기록 초기화는 모든 기기에 퍼진다.
+- 음성 선택(`voice`)은 기기마다 다르므로 동기화하지 않는다.
+- Firebase 웹 설정은 `firebase.config.json`에 있다(공개돼도 되는 값). 이 파일을 지우고 빌드하면 동기화가 꺼진다.
+- 보안 규칙은 `firestore.rules` — 바꾼 뒤 `firebase deploy --only firestore:rules`.
+
+## 음성(TTS)
+
+화면에 보이는 후리가나대로 읽히도록, 후리가나가 달린 한자는 읽기(가나)로 바꿔서 브라우저 음성 엔진에 넘긴다(`yomi()`).
+그래서 후리가나가 틀리면 소리도 틀린다 → `scripts/build-data.js`의 `POST` 보정 규칙으로 고친다.
+음성은 품질 순(Edge Natural > Google > 그 외)으로 자동 선택되고, 설정에서 바꿀 수 있다.
 
 ## 데이터 출처
 
